@@ -109,11 +109,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--color-neutral-text);
-    transition: color var(--duration-fast) var(--ease-out-quart);
+    transition:
+      color var(--duration-base) var(--ease-out-quart),
+      opacity var(--duration-fast) var(--ease-out-quart);
   }
 
   .nav-wordmark:hover {
     color: var(--color-primary);
+  }
+
+  .nav-wordmark:active {
+    opacity: 0.7;
   }
 
   .nav-links {

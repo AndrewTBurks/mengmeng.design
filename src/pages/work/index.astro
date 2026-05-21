@@ -121,6 +121,16 @@ const projects = [
   .page-header {
     padding: var(--space-4xl) var(--gutter) var(--space-2xl);
     border-bottom: 1px solid var(--color-neutral-border);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeDown var(--duration-slow) var(--ease-out-quart) forwards;
+  }
+
+  @keyframes fadeDown {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .page-header-inner {
@@ -176,6 +186,31 @@ const projects = [
 
   .work-grid-item {
     list-style: none;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp var(--duration-slow) var(--ease-out-quart) forwards;
+  }
+
+  .work-grid-item:nth-child(1) { animation-delay: 40ms; }
+  .work-grid-item:nth-child(2) { animation-delay: 80ms; }
+  .work-grid-item:nth-child(3) { animation-delay: 120ms; }
+  .work-grid-item:nth-child(4) { animation-delay: 160ms; }
+  .work-grid-item:nth-child(5) { animation-delay: 200ms; }
+  .work-grid-item:nth-child(6) { animation-delay: 240ms; }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work-grid-item {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
   }
 
   .work-grid-link {
@@ -212,6 +247,19 @@ const projects = [
 
   .work-grid-link:hover .work-grid-image {
     transform: scale(1.03);
+  }
+
+  .work-grid-link:active .work-grid-image {
+    transform: scale(1.01);
+    transition-duration: var(--duration-fast);
+  }
+
+  .work-grid-link:active .work-grid-image-overlay {
+    background: linear-gradient(
+      to bottom,
+      transparent 30%,
+      oklch(0% 0 0 / 0.14) 100%
+    );
   }
 
   .work-grid-link:focus-visible {
