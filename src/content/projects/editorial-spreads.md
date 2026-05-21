@@ -1,12 +1,18 @@
 ---
 title: Editorial Spreads
-category: Editorial
-year: "2024"
-description: Magazine layout design for a quarterly arts publication.
-image: https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80
-order: 1
+category: Editorial Design
+year: "2023"
+description: Layout design for a long-form essay on architecture and memory, published in the Winter issue of Folio Magazine.
+images:
+  - src: https://images.unsplash.com/photo-1544716278-ca4e3f6abd8c?w=800&q=80
+    caption: Opening spread — full bleed photography with overlaid title
+  - src: https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80
+    caption: Body text grids showing column rhythm and footnote placement
+  - src: https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80
+    caption: Closing spread with pull quote and colophon
+  - src: https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80
+    caption: Alternate cover concept — matte laminated finish
+order: 4
 ---
 
-Magazine layout design for a quarterly arts publication. Working across print and digital editions, each spread negotiates the relationship between image, caption, and essay text: finding the rhythm that makes a reader linger rather than flip.
-
-The challenge was always the same: how do you give a photograph room to breathe without letting the page fall apart?
+Layout design for a long-form essay on architecture and memory, published in the Winter issue of Folio Magazine. The challenge was holding the reader's attention across twelve pages without a single image beyond the opening and closing spreads.

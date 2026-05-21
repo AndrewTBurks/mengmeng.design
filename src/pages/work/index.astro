@@ -31,7 +31,7 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
             <div class="row-image-wrap">
               <a href={`/work/${project.id}`} class="row-image-link" aria-label={`View ${project.data.title}`}>
                 <ProjectImage
-                  src={project.data.image}
+                  src={project.data.images[0].src}
                   alt={project.data.title}
                   class="row-image"
                 />

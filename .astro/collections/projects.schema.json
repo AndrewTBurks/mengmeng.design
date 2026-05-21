@@ -14,8 +14,22 @@
     "description": {
       "type": "string"
     },
-    "image": {
-      "type": "string"
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "src": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "src"
+        ]
+      }
     },
     "order": {
       "type": "number"
@@ -29,7 +43,7 @@
     "category",
     "year",
     "description",
-    "image",
+    "images",
     "order"
   ]
 }

@@ -3,7 +3,15 @@ title: Still Life Series
 category: Oil Painting
 year: "2024"
 description: A series of oil paintings exploring domestic objects under natural light.
-image: https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80
+images:
+  - src: https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80
+    caption: Study in glass and ceramic — morning north light
+  - src: https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=800&q=80
+    caption: Cloth and porcelain — the weight of linen
+  - src: https://images.unsplash.com/photo-1460661419201-fd4cecdf7a8b?w=800&q=80
+    caption: Final composition — vessels in afternoon window
+  - src: https://images.unsplash.com/photo-1548024674-f8c48771001a?w=800&q=80
+    caption: Study in glass and ceramic — morning north light
 order: 0
 ---
 

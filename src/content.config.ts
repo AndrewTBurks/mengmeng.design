@@ -8,7 +8,10 @@ const projects = defineCollection({
     category: z.string(),
     year: z.string(),
     description: z.string(),
-    image: z.string(),
+    images: z.array(z.object({
+      src: z.string(),
+      caption: z.string().optional(),
+    })),
     order: z.number(),
   }),
 });
