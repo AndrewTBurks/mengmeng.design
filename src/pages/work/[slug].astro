@@ -96,7 +96,7 @@ const allImages = [...(project.data.images ?? [])];
 
   <script>
     (function () {
-      const SHAKE_THRESHOLD = 18;
+const SHAKE_THRESHOLD = 13;
       let lastX = 0, lastY = 0, lastZ = 0;
       let lastShake = 0;
       let currentIndex = 0;
@@ -149,6 +149,11 @@ const allImages = [...(project.data.images ?? [])];
 
         if (autoReassembleTimer) clearTimeout(autoReassembleTimer);
 
+        // Freeze the track at its current scroll position so frame rects are stable
+        // (getBoundingClientRect would otherwise be offset by currentTranslate)
+        const frozenTranslate = currentTranslate;
+        if (track) track.style.transform = 'translate3d(0,0,0)';
+
         const stageWidth = getCarouselWidth();
         const stageHeight = stage ? stage.offsetHeight : 300;
         const frameEl = targets[0] as HTMLElement | undefined;
@@ -156,7 +161,7 @@ const allImages = [...(project.data.images ?? [])];
         const frameHeight = frameEl ? frameEl.offsetHeight : stageHeight;
 
         // Snapshot each frame's visual position relative to the stage using getBoundingClientRect
-        // (accounts for any track translate already applied via flex layout)
+        // (now accurate since track transform is frozen at 0)
         const stageRect = stage.getBoundingClientRect();
         const frameRects = targets.map((el) => {
           const r = el.getBoundingClientRect();
@@ -196,6 +201,9 @@ const allImages = [...(project.data.images ?? [])];
           (el as HTMLElement).style.zIndex = `${z}`;
           el.classList.add('is-scattered');
         });
+
+        // Restore track transform for the reassemble snap-back
+        if (track) track.style.transform = `translate3d(${frozenTranslate}px, 0, 0)`;
 
         // Show overflow when scattered so scaled frames can spread beyond stage bounds
         stage?.classList.add('is-scattered');
@@ -477,6 +485,8 @@ const allImages = [...(project.data.images ?? [])];
     background: #fff;
     display: flex;
     flex-direction: column;
+    padding: 7px 7px 0;
+    box-sizing: border-box;
   }
 
   :global(.carousel-image) {
@@ -491,12 +501,14 @@ const allImages = [...(project.data.images ?? [])];
     font-family: var(--font-marker);
     font-size: 0.8rem;
     color: oklch(30% 0.01 50);
-    padding: 10px 12px 14px;
+    padding: 10px 0 8px;
     line-height: 1.35;
     flex-shrink: 0;
-    min-height: 3.5rem;
     box-sizing: border-box;
-    text-wrap: balance;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   /* ── Nav ──────────────────────────────────────────────────── */
@@ -614,7 +626,6 @@ const allImages = [...(project.data.images ?? [])];
       align-items: flex-start;
       gap: var(--space-sm);
     }
-    .carousel-frame { padding: 7px 7px 22px; }
     .shake-hint { font-size: 10px; }
   }
 </style>
