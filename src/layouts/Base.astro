@@ -122,6 +122,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng
   }
 
   .nav-links a {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-sm);
     font-size: var(--text-small);
     font-weight: var(--weight-regular);
     letter-spacing: var(--tracking-wide);
