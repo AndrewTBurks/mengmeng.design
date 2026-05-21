@@ -1,8 +1,62 @@
 ---
 import Base from '../../layouts/Base.astro';
+
+const projects = [
+  {
+    slug: 'still-life-series',
+    title: 'Still Life Series',
+    category: 'Oil Painting',
+    year: '2024',
+    description: 'A series of oil paintings exploring domestic objects under natural light.',
+    image: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
+  },
+  {
+    slug: 'editorial-spreads',
+    title: 'Editorial Spreads',
+    category: 'Editorial',
+    year: '2024',
+    description: 'Magazine layout design for a quarterly arts publication.',
+    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80',
+  },
+  {
+    slug: 'motion-identity',
+    title: 'Motion Identity',
+    category: 'Motion',
+    year: '2023',
+    description: 'Animated brand identity for a creative studio.',
+    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80',
+  },
+  {
+    slug: 'illustration-series',
+    title: 'Illustration Series',
+    category: 'Illustration',
+    year: '2023',
+    description: 'A collection of hand-drawn illustrations for a children\'s book.',
+    image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80',
+  },
+  {
+    slug: 'type-poster',
+    title: 'Type Poster Series',
+    category: 'Editorial',
+    year: '2023',
+    description: 'Experimental typographic posters combining letterpress and digital.',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+  },
+  {
+    slug: 'brand-identity',
+    title: 'Brand Identity',
+    category: 'Illustration',
+    year: '2022',
+    description: 'Complete visual identity for a small-batch ceramics brand.',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+  },
+];
 ---
 
-<Base title="Work — Mengmeng" description="Selected projects by Mengmeng — illustration, motion, editorial, oil painting.">
+<Base
+  title="Work — Mengmeng"
+  description="Selected projects by Mengmeng — illustration, motion, editorial, oil painting."
+>
   <div class="page-work">
     <header class="page-header">
       <div class="page-header-inner">
@@ -17,88 +71,52 @@ import Base from '../../layouts/Base.astro';
         Each piece reflects a commitment to craft and a love for the details that make work worth noticing.
       </p>
 
-      <!-- Work grid populated by client-side JS from embedded data -->
-      <ul class="work-grid" id="work-grid">
-        <!-- Injected by work-data.js -->
+      <ul class="work-grid" aria-label="Project gallery">
+        {projects.map((project) => (
+          <li class="work-grid-item">
+            <a href={`/work/${project.slug}`} class="work-grid-link" aria-label={`View ${project.title}`}>
+              <div class="work-grid-image-wrap">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  class="work-grid-image"
+                  loading="lazy"
+                />
+                <div class="work-grid-image-overlay" aria-hidden="true" />
+              </div>
+              <div class="work-grid-meta">
+                <span class="work-grid-category">{project.category}</span>
+                <span class="work-grid-name">{project.title}</span>
+                <p class="work-grid-desc">{project.description}</p>
+                <span class="work-grid-year">{project.year}</span>
+              </div>
+            </a>
+          </li>
+        ))}
       </ul>
     </section>
   </div>
 </Base>
 
-<script>
-  const projects = [
-    {
-      slug: 'still-life-series',
-      title: 'Still Life Series',
-      category: 'Oil Painting',
-      year: '2024',
-      description: 'A series of oil paintings exploring domestic objects under natural light.',
-      image: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
-    },
-    {
-      slug: 'editorial-spreads',
-      title: 'Editorial Spreads',
-      category: 'Editorial',
-      year: '2024',
-      description: 'Magazine layout design for a quarterly arts publication.',
-      image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80',
-    },
-    {
-      slug: 'motion-identity',
-      title: 'Motion Identity',
-      category: 'Motion',
-      year: '2023',
-      description: 'Animated brand identity for a creative studio.',
-      image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80',
-    },
-    {
-      slug: 'illustration-series',
-      title: 'Illustration Series',
-      category: 'Illustration',
-      year: '2023',
-      description: 'A collection of hand-drawn illustrations for a children\'s book.',
-      image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80',
-    },
-    {
-      slug: 'type-poster',
-      title: 'Type Poster Series',
-      category: 'Editorial',
-      year: '2023',
-      description: 'Experimental typographic posters combining letterpress and digital.',
-      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
-    },
-    {
-      slug: 'brand-identity',
-      title: 'Brand Identity',
-      category: 'Illustration',
-      year: '2022',
-      description: 'Complete visual identity for a small-batch ceramics brand.',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
-    },
-  ];
-
-  const grid = document.getElementById('work-grid');
-  if (grid) {
-    grid.innerHTML = projects.map(p => `
-      <li class="work-grid-item">
-        <a href="/work/${p.slug}" class="work-grid-link">
-          <div class="work-grid-image-wrap">
-            <img src="${p.image}" alt="${p.title}" class="work-grid-image" loading="lazy" />
-            <div class="work-grid-image-overlay" aria-hidden="true" />
-          </div>
-          <div class="work-grid-meta">
-            <span class="work-grid-category">${p.category}</span>
-            <span class="work-grid-name">${p.title}</span>
-            <p class="work-grid-desc">${p.description}</p>
-            <span class="work-grid-year">${p.year}</span>
-          </div>
-        </a>
-      </li>
-    `).join('');
-  }
-</script>
-
 <style>
+  /* ── Skip Link ───────────────────────────────────────────── */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--gutter);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary);
+    color: var(--color-neutral-bg);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    z-index: 999;
+    transition: top var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .skip-link:focus {
+    top: var(--space-sm);
+  }
+
   /* ── Page Header ─────────────────────────────────────────── */
   .page-header {
     padding: var(--space-4xl) var(--gutter) var(--space-2xl);
@@ -194,6 +212,12 @@ import Base from '../../layouts/Base.astro';
 
   .work-grid-link:hover .work-grid-image {
     transform: scale(1.03);
+  }
+
+  .work-grid-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
   }
 
   .work-grid-meta {

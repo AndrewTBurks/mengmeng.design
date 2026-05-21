@@ -34,6 +34,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng
     <title>{title}</title>
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <header class="site-header">
       <nav class="site-nav">
         <a href="/" class="nav-wordmark">mengmeng.design</a>
@@ -44,7 +45,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng
       </nav>
     </header>
 
-    <main>
+    <main id="main-content">
       <slot />
     </main>
 
@@ -53,15 +54,36 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng
         <span class="footer-muted">©</span> {new Date().getFullYear()} Mengmeng
       </p>
       <ul class="footer-links">
-        <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
-        <li><a href="https://are.na" target="_blank" rel="noopener">Are.na</a></li>
-        <li><a href="mailto:hello@mengmeng.design">Email</a></li>
+        <li><a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram (opens in new tab)">Instagram</a></li>
+        <li><a href="https://are.na" target="_blank" rel="noopener" aria-label="Are.na (opens in new tab)">Are.na</a></li>
+        <li><a href="mailto:hello@mengmeng.design" aria-label="Send email">Email</a></li>
       </ul>
     </footer>
   </body>
 </html>
 
 <style>
+  /* ── Skip Link ───────────────────────────────────────────── */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--gutter);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary);
+    color: var(--color-neutral-bg);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    z-index: 999;
+    text-decoration: none;
+    transition: top var(--duration-fast) var(--ease-out-quart);
+    border-radius: var(--radius-sm);
+  }
+
+  .skip-link:focus {
+    top: var(--space-sm);
+    outline: none;
+  }
+
   /* ── Header ─────────────────────────────────────────────── */
   .site-header {
     position: sticky;
