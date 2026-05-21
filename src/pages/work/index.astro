@@ -84,10 +84,12 @@ import Base from '../../layouts/Base.astro';
         <a href="/work/${p.slug}" class="work-grid-link">
           <div class="work-grid-image-wrap">
             <img src="${p.image}" alt="${p.title}" class="work-grid-image" loading="lazy" />
+            <div class="work-grid-image-overlay" aria-hidden="true" />
           </div>
           <div class="work-grid-meta">
             <span class="work-grid-category">${p.category}</span>
             <span class="work-grid-name">${p.title}</span>
+            <p class="work-grid-desc">${p.description}</p>
             <span class="work-grid-year">${p.year}</span>
           </div>
         </a>
@@ -143,7 +145,7 @@ import Base from '../../layouts/Base.astro';
   .work-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-2xl) var(--space-xl);
+    gap: var(--space-3xl) var(--space-2xl);
   }
 
   @media (max-width: 900px) {
@@ -165,45 +167,67 @@ import Base from '../../layouts/Base.astro';
   }
 
   .work-grid-image-wrap {
+    position: relative;
     overflow: hidden;
     background: var(--color-neutral-surface);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
   }
 
   .work-grid-image {
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
     display: block;
     transition: transform var(--duration-slow) var(--ease-out-quart);
   }
 
+  .work-grid-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      oklch(0% 0 0 / 0.06) 100%
+    );
+    pointer-events: none;
+  }
+
   .work-grid-link:hover .work-grid-image {
-    transform: scale(1.04);
+    transform: scale(1.03);
   }
 
   .work-grid-meta {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: var(--space-2xs);
   }
 
   .work-grid-category {
     font-size: var(--text-label);
     font-weight: var(--weight-medium);
-    letter-spacing: var(--tracking-label);
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--color-primary);
+    margin-bottom: var(--space-2xs);
   }
 
   .work-grid-name {
     font-size: var(--text-body);
     font-weight: var(--weight-regular);
     color: var(--color-neutral-text);
+    line-height: var(--leading-snug);
+  }
+
+  .work-grid-desc {
+    font-size: var(--text-small);
+    color: var(--color-neutral-muted);
+    line-height: var(--leading-body);
+    margin-top: var(--space-2xs);
   }
 
   .work-grid-year {
     font-size: var(--text-label);
     color: var(--color-neutral-muted);
+    margin-top: var(--space-xs);
   }
 </style>
