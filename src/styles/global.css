@@ -7,8 +7,8 @@
 /* ── Colors (full-palette strategy) ───────────────────────── */
 :root {
   /* Primary — warm coral/amber accent */
-  --color-primary: oklch(60% 0.14 45);
-  --color-primary-hover: oklch(55% 0.16 45);
+  --color-primary: oklch(55% 0.16 45);
+  --color-primary-hover: oklch(48% 0.18 45);
 
   /* Secondary — warm teal */
   --color-secondary: oklch(55% 0.10 200);
