@@ -1,0 +1,115 @@
+---
+import Base from '../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  const slugs = [
+    'still-life-series',
+    'editorial-spreads',
+    'motion-identity',
+    'illustration-series',
+    'type-poster',
+    'brand-identity',
+  ];
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const title = slug
+  .split('-')
+  .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+  .join(' ');
+---
+
+<Base
+  title={`${title} — Mengmeng`}
+  description={`${title} — coming soon.`}
+>
+  <div class="page-placeholder">
+    <div class="placeholder-inner">
+      <p class="placeholder-label">Project</p>
+      <h1 class="placeholder-title">{title}</h1>
+      <p class="placeholder-body">
+        This page is being prepared.<br />
+        Coming soon.
+      </p>
+      <a href="/work" class="placeholder-back">← Back to work</a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page-placeholder {
+    min-height: calc(100dvh - var(--nav-height) - var(--space-3xl));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4xl) var(--gutter);
+  }
+
+  .placeholder-inner {
+    text-align: center;
+    max-width: 36ch;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp var(--duration-slow) var(--ease-out-quart) forwards;
+  }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .placeholder-inner {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+
+  .placeholder-label {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .placeholder-title {
+    font-size: var(--text-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--leading-display);
+    color: var(--color-neutral-text);
+    margin-bottom: var(--space-lg);
+  }
+
+  .placeholder-body {
+    font-size: var(--text-body);
+    color: var(--color-neutral-muted);
+    margin-bottom: var(--space-2xl);
+    line-height: var(--leading-body);
+  }
+
+  .placeholder-back {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-neutral-text);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-out-quart);
+  }
+
+  .placeholder-back:hover {
+    color: var(--color-primary);
+  }
+
+  .placeholder-back:active {
+    opacity: 0.7;
+  }
+</style>

@@ -83,6 +83,9 @@ const projects = [
                   loading="lazy"
                 />
                 <div class="work-grid-image-overlay" aria-hidden="true" />
+                <div class="work-image-soon" aria-hidden="true">
+                  <span class="work-image-soon-text">Coming soon</span>
+                </div>
               </div>
               <div class="work-grid-meta">
                 <span class="work-grid-category">{project.category}</span>
@@ -260,6 +263,47 @@ const projects = [
       transparent 30%,
       oklch(0% 0 0 / 0.14) 100%
     );
+  }
+
+  /* Placeholder overlay — shown because images are not real work */
+  .work-grid-image {
+    filter: blur(12px);
+    transform: scale(1.04);
+    transition:
+      filter var(--duration-slow) var(--ease-out-quart),
+      transform var(--duration-slow) var(--ease-out-quart);
+  }
+
+  .work-grid-link:hover .work-grid-image {
+    filter: blur(16px);
+    transform: scale(1.06);
+  }
+
+  .work-grid-link:active .work-grid-image {
+    filter: blur(12px);
+    transform: scale(1.04);
+  }
+
+  .work-image-soon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: oklch(0% 0 0 / 0.2);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    pointer-events: none;
+  }
+
+  .work-image-soon-text {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: oklch(97% 0.006 50);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid oklch(97% 0.006 50 / 0.4);
   }
 
   .work-grid-link:focus-visible {
