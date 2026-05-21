@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title: string;
@@ -49,16 +50,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <p class="footer-copy">
-        <span class="footer-muted">©</span> {new Date().getFullYear()} Mengmeng
-      </p>
-      <ul class="footer-links">
-        <li><a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram (opens in new tab)">Instagram</a></li>
-        <li><a href="https://are.na" target="_blank" rel="noopener" aria-label="Are.na (opens in new tab)">Are.na</a></li>
-        <li><a href="mailto:hello@mengmeng.design" aria-label="Send email">Email</a></li>
-      </ul>
-    </footer>
+    <Footer />
   </body>
 </html>
 
@@ -147,37 +139,5 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng
   }
 
   /* ── Footer ─────────────────────────────────────────────── */
-  .site-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: var(--space-lg) var(--gutter);
-    border-top: 1px solid var(--color-neutral-border);
-    font-size: var(--text-small);
-  }
-
-  .footer-copy {
-    color: var(--color-neutral-muted);
-  }
-
-  .footer-muted {
-    color: var(--color-neutral-muted);
-    margin-right: 0.2em;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: var(--space-md);
-  }
-
-  .footer-links a {
-    color: var(--color-neutral-muted);
-    transition: color var(--duration-fast) var(--ease-out-quart);
-  }
-
-  .footer-links a:hover {
-    color: var(--color-neutral-text);
-  }
+  /* ── Footer styles are in components/Footer.astro ── */
 </style>

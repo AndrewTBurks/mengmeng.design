@@ -1,56 +1,10 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
 
-const projects = [
-  {
-    slug: 'still-life-series',
-    title: 'Still Life Series',
-    category: 'Oil Painting',
-    year: '2024',
-    description: 'A series of oil paintings exploring domestic objects under natural light.',
-    image: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
-  },
-  {
-    slug: 'editorial-spreads',
-    title: 'Editorial Spreads',
-    category: 'Editorial',
-    year: '2024',
-    description: 'Magazine layout design for a quarterly arts publication.',
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80',
-  },
-  {
-    slug: 'motion-identity',
-    title: 'Motion Identity',
-    category: 'Motion',
-    year: '2023',
-    description: 'Animated brand identity for a creative studio.',
-    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80',
-  },
-  {
-    slug: 'illustration-series',
-    title: 'Illustration Series',
-    category: 'Illustration',
-    year: '2023',
-    description: 'A collection of hand-drawn illustrations for a children\'s book.',
-    image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80',
-  },
-  {
-    slug: 'type-poster',
-    title: 'Type Poster Series',
-    category: 'Editorial',
-    year: '2023',
-    description: 'Experimental typographic posters combining letterpress and digital.',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
-  },
-  {
-    slug: 'brand-identity',
-    title: 'Brand Identity',
-    category: 'Illustration',
-    year: '2022',
-    description: 'Complete visual identity for a small-batch ceramics brand.',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
-  },
-];
+const allProjects = await getCollection('projects');
+const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Base
@@ -58,186 +12,296 @@ const projects = [
   description="Selected projects by Mengmeng — illustration, motion, editorial, oil painting."
 >
   <div class="page-work">
-    <header class="page-header">
-      <div class="page-header-inner">
-        <h1 class="page-title">Work</h1>
-        <p class="page-subtitle">Illustration, motion, editorial, oil painting.</p>
-      </div>
-    </header>
+    <div class="timeline-viewport" aria-label="Project timeline">
+      <div class="timeline-track">
+        <div class="timeline">
+          {projects.map((project, index) => (
+        <article
+          class={`timeline-row timeline-item ${index % 2 === 0 ? 'row-image-left' : 'row-image-right'}`}
+          data-index={index}
+        >
+          {/* Year bubble — sits on the center line, in the letterbox */}
+          <div class="row-bubble" aria-hidden="true">
+            <span class="row-year">{project.data.year}</span>
+          </div>
 
-    <section class="work-body">
-      <p class="work-intro">
-        Spanning illustration, motion design, editorial layout, and oil painting.
-        Work made with care for the details that make it worth noticing.
-      </p>
-
-      <ul class="work-grid" aria-label="Project gallery">
-        {projects.map((project) => (
-          <li class="work-grid-item">
-            <a href={`/work/${project.slug}`} class="work-grid-link" aria-label={`View ${project.title}`}>
-              <div class="work-grid-image-wrap">
+          {/* Row content: 16:9, full width, centered in the 100vh row */}
+          <div class="row-content">
+            <div class="row-image-wrap">
+              <a href={`/work/${project.id}`} class="row-image-link" aria-label={`View ${project.data.title}`}>
                 <img
-                  src={project.image}
-                  alt={project.title}
-                  class="work-grid-image"
+                  src={project.data.image}
+                  alt={project.data.title}
+                  class="row-image"
                   loading="lazy"
                 />
-                <div class="work-grid-image-overlay" aria-hidden="true" />
-                <div class="work-image-soon" aria-hidden="true">
-                  <span class="work-image-soon-text">Coming soon</span>
+                <div class="row-image-overlay" aria-hidden="true" />
+                <div class="row-image-soon" aria-hidden="true">
+                  <span class="row-image-soon-text">Coming soon</span>
                 </div>
-              </div>
-              <div class="work-grid-meta">
-                <span class="work-grid-category">{project.category}</span>
-                <span class="work-grid-name">{project.title}</span>
-                <p class="work-grid-desc">{project.description}</p>
-                <span class="work-grid-year">{project.year}</span>
-              </div>
-            </a>
-          </li>
+              </a>
+            </div>
+
+            <div class="row-meta">
+              <span class="row-category">{project.data.category}</span>
+              <h2 class="row-title">{project.data.title}</h2>
+              <p class="row-desc">{project.data.description}</p>
+            </div>
+          </div>
+        </article>
         ))}
-      </ul>
-    </section>
+          <footer class="timeline-footer">
+            <Footer />
+          </footer>
+        </div>
+      </div>
+    </div>
   </div>
 </Base>
 
+<script>
+  const track = document.querySelector('.timeline-track');
+  if (track) {
+    const rows = Array.from(track.querySelectorAll('.timeline-row')) as HTMLElement[];
+
+    const setActive = (index: number) => {
+      // First, remove clipped from all rows
+      rows.forEach((row) => {
+        row.classList.remove('is-clipped');
+      });
+
+      rows.forEach((row, i) => {
+        if (i === index) {
+          row.style.opacity = '1';
+          row.classList.add('is-active');
+          row.classList.remove('is-faded');
+        } else {
+          row.style.opacity = '0.10';
+          row.classList.remove('is-active');
+          row.classList.add('is-faded');
+        }
+      });
+
+      // Mark clipped rows: a row is clipped when it's positioned at the
+      // top or bottom edge of the timeline viewport — partially cut off by overflow.
+      const viewportHeight = document.querySelector('.timeline-viewport')?.offsetHeight ?? window.innerHeight;
+      const prev = rows[index - 1];
+      const next = rows[index + 1];
+      if (prev) {
+        const prevBottom = prev.getBoundingClientRect().bottom;
+        if (prevBottom < 0) prev.classList.add('is-clipped');
+      }
+      if (next) {
+        const nextTop = next.getBoundingClientRect().top;
+        if (nextTop > viewportHeight) next.classList.add('is-clipped');
+      }
+    };
+
+    // Initial: first row active
+    setActive(0);
+
+    // Scroll-snap focal observer — row closest to viewport center wins
+    const observer = new IntersectionObserver(
+      () => {
+        let best: { el: HTMLElement; dist: number } | null = null;
+        rows.forEach((row) => {
+          const rect = row.getBoundingClientRect();
+          const center = rect.top + rect.height / 2;
+          const vhCenter = window.innerHeight / 2;
+          const dist = Math.abs(center - vhCenter);
+          if (!best || dist < best.dist) best = { el: row, dist };
+        });
+        if (best) setActive(rows.indexOf(best.el));
+      },
+      { threshold: Array.from({ length: 21 }, (_, i) => i * 0.05) }
+    );
+
+    rows.forEach((row) => observer.observe(row));
+  }
+</script>
+
 <style>
-  /* ── Skip Link ───────────────────────────────────────────── */
-  .skip-link {
+  /* ── Page Work — only .timeline scrolls, body/html handled globally ─── */
+  .page-work {
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* ── Timeline Viewport — full width, minus sticky header ── */
+  .timeline-viewport {
+    height: calc(100vh - 65px);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ── Timeline Track — full width, holds the scroll ── */
+  .timeline-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Timeline — constrained to 4:3, centered inside the full-width track ── */
+  .timeline {
     position: absolute;
-    top: -100%;
-    left: var(--gutter);
-    padding: var(--space-sm) var(--space-md);
-    background: var(--color-primary);
-    color: var(--color-neutral-bg);
-    font-size: var(--text-small);
-    font-weight: var(--weight-medium);
-    z-index: 999;
-    transition: top var(--duration-fast) var(--ease-out-quart);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(100%, calc((100vh - 65px) * 4 / 3));
+    height: 100%;
   }
 
-  .skip-link:focus {
-    top: var(--space-sm);
+  /* ── Timeline Row — cinemascope 2.39:1, snaps to center ─── */
+  .timeline-row {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2.39 / 1;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Default: faded */
+    opacity: 0.10;
+    transition: opacity 0.4s var(--ease-out-quart);
+    margin-block: 8px;
   }
 
-  /* ── Page Header ─────────────────────────────────────────── */
-  .page-header {
-    padding: var(--space-4xl) var(--gutter) var(--space-2xl);
-    border-bottom: 1px solid var(--color-neutral-border);
+  .timeline-row.is-active {
+    opacity: 1;
+  }
+
+  /* Entrance animation on the row content */
+  .timeline-item {
     opacity: 0;
-    transform: translateY(8px);
-    animation: fadeDown var(--duration-slow) var(--ease-out-quart) forwards;
+    transform: scale(0.985);
+    transition:
+      opacity 0.45s var(--ease-out-quart),
+      transform 0.45s var(--ease-out-quart);
   }
 
-  @keyframes fadeDown {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .timeline-item.is-active {
+    opacity: 1;
+    transform: scale(1);
   }
 
-  .page-header-inner {
-    max-width: var(--max-width);
-    margin: 0 auto;
+  /* Clipped rows: top or bottom of viewport get 10% even if "active" during scroll */
+  .timeline-row.is-clipped {
+    opacity: 0.10 !important;
   }
 
-  .page-title {
-    font-size: var(--text-headline);
-    font-weight: var(--weight-light);
-    letter-spacing: -0.02em;
-    color: var(--color-neutral-text);
-    line-height: var(--leading-tight);
-    margin-bottom: var(--space-sm);
+  /* ── Timeline Footer ──────────────────────────────────────── */
+.timeline-footer {
+    width: 100%;
+    flex-shrink: 0;
   }
 
-  .page-subtitle {
-    font-size: var(--text-body);
-    color: var(--color-neutral-muted);
-    font-weight: var(--weight-light);
-  }
-
-  /* ── Work Body ───────────────────────────────────────────── */
-  .work-body {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: var(--space-2xl) var(--gutter) var(--space-5xl);
-  }
-
-  .work-intro {
-    font-size: var(--text-body);
-    color: var(--color-neutral-muted);
-    max-width: 56ch;
-    line-height: var(--leading-body);
-    margin-bottom: var(--space-3xl);
-    font-weight: var(--weight-light);
-  }
-
-  /* ── Work Grid ───────────────────────────────────────────── */
-  .work-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-3xl) var(--space-2xl);
-  }
-
-  @media (max-width: 768px) {
-    .work-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  @media (max-width: 560px) {
-    .work-grid { grid-template-columns: 1fr; }
-  }
-
-  .work-grid-item {
-    list-style: none;
-    opacity: 0;
-    transform: translateY(16px);
-    animation: fadeUp var(--duration-slow) var(--ease-out-quart) forwards;
-  }
-
-  .work-grid-item:nth-child(1) { animation-delay: 40ms; }
-  .work-grid-item:nth-child(2) { animation-delay: 80ms; }
-  .work-grid-item:nth-child(3) { animation-delay: 120ms; }
-  .work-grid-item:nth-child(4) { animation-delay: 160ms; }
-  .work-grid-item:nth-child(5) { animation-delay: 200ms; }
-  .work-grid-item:nth-child(6) { animation-delay: 240ms; }
-
-  @keyframes fadeUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* ── Row gap ─────────────────────────────────────────────── */
+  .timeline-row {
+    margin-block: 12px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .work-grid-item {
-      opacity: 1;
+    .timeline-item,
+    .timeline-row {
+      opacity: 1 !important;
       transform: none;
-      animation: none;
+      transition: none;
     }
   }
 
-  .work-grid-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
+/* ── Row Content — 16:9 grid, full width of the row ─────── */
+  .row-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: dense;
+    width: 100%;
+    height: 100%;
   }
 
-  .work-grid-image-wrap {
+  /* ── Year Bubble — on the center line, in the letterbox ──── */
+  .row-bubble {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 4px var(--color-neutral-bg);
+  }
+
+  .row-year {
+    font-size: 11px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.02em;
+    color: oklch(97% 0.006 50);
+    line-height: 1;
+  }
+
+  /* ── Image Side ─────────────────────────────────────────── */
+  .row-image-left .row-image-wrap {
+    grid-column: 1;
+  }
+
+  .row-image-right .row-image-wrap {
+    grid-column: 2;
+  }
+
+  /* ── Meta Side ──────────────────────────────────────────── */
+  .row-image-left .row-meta {
+    grid-column: 2;
+  }
+
+  .row-image-right .row-meta {
+    grid-column: 1;
+  }
+
+  /* ── Image ───────────────────────────────────────────────── */
+  .row-image-wrap {
     position: relative;
     overflow: hidden;
     background: var(--color-neutral-surface);
-    margin-bottom: var(--space-md);
+    height: 100%;
   }
 
-  .work-grid-image {
+  .row-image-link {
+    display: block;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .row-image {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform var(--duration-slow) var(--ease-out-quart);
+    filter: blur(12px);
+    transform: scale(1.04);
+    transition:
+      filter var(--duration-slow) var(--ease-out-quart),
+      transform var(--duration-slow) var(--ease-out-quart);
   }
 
-  .work-grid-image-overlay {
+  .row-image-link:hover .row-image {
+    filter: blur(16px);
+    transform: scale(1.06);
+  }
+
+  .row-image-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
@@ -248,43 +312,13 @@ const projects = [
     pointer-events: none;
   }
 
-  .work-grid-link:hover .work-grid-image {
-    transform: scale(1.03);
+  .row-image-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
   }
 
-  .work-grid-link:active .work-grid-image {
-    transform: scale(1.01);
-    transition-duration: var(--duration-fast);
-  }
-
-  .work-grid-link:active .work-grid-image-overlay {
-    background: linear-gradient(
-      to bottom,
-      transparent 30%,
-      oklch(0% 0 0 / 0.14) 100%
-    );
-  }
-
-  /* Placeholder overlay — shown because images are not real work */
-  .work-grid-image {
-    filter: blur(12px);
-    transform: scale(1.04);
-    transition:
-      filter var(--duration-slow) var(--ease-out-quart),
-      transform var(--duration-slow) var(--ease-out-quart);
-  }
-
-  .work-grid-link:hover .work-grid-image {
-    filter: blur(16px);
-    transform: scale(1.06);
-  }
-
-  .work-grid-link:active .work-grid-image {
-    filter: blur(12px);
-    transform: scale(1.04);
-  }
-
-  .work-image-soon {
+  /* Coming soon overlay */
+  .row-image-soon {
     position: absolute;
     inset: 0;
     display: flex;
@@ -296,7 +330,7 @@ const projects = [
     pointer-events: none;
   }
 
-  .work-image-soon-text {
+  .row-image-soon-text {
     font-size: var(--text-label);
     font-weight: var(--weight-medium);
     letter-spacing: 0.15em;
@@ -306,44 +340,132 @@ const projects = [
     border: 1px solid oklch(97% 0.006 50 / 0.4);
   }
 
-  .work-grid-link:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 4px;
-    border-radius: var(--radius-sm);
-  }
-
-  .work-grid-meta {
-    display: grid;
-    grid-template-columns: 1fr;
+  /* ── Meta ─────────────────────────────────────────────────── */
+  .row-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     gap: var(--space-2xs);
+    padding: var(--space-2xl) var(--space-xl);
+    background: var(--color-neutral-bg);
+    height: 100%;
   }
 
-  .work-grid-category {
+  .row-category {
     font-size: var(--text-label);
     font-weight: var(--weight-medium);
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--color-primary);
-    margin-bottom: var(--space-2xs);
+    margin-bottom: var(--space-xs);
   }
 
-  .work-grid-name {
-    font-size: var(--text-body);
-    font-weight: var(--weight-regular);
+  .row-title {
+    font-size: clamp(var(--text-body), 2.5vw, var(--text-headline));
+    font-weight: var(--weight-light);
+    letter-spacing: -0.01em;
     color: var(--color-neutral-text);
-    line-height: var(--leading-snug);
+    line-height: var(--leading-tight);
   }
 
-  .work-grid-desc {
+  .row-desc {
     font-size: var(--text-small);
     color: var(--color-neutral-muted);
     line-height: var(--leading-body);
-    margin-top: var(--space-2xs);
+    margin-top: var(--space-sm);
+    max-width: 36ch;
   }
 
-  .work-grid-year {
-    font-size: var(--text-label);
-    color: var(--color-neutral-muted);
-    margin-top: var(--space-xs);
+  /* ── Responsive: single column below 1024px ─────────────── */
+  @media (max-width: 1024px) {
+    .page-work {
+      height: auto;
+      overflow: visible;
+    }
+
+    .timeline {
+      height: auto;
+      overflow: visible;
+      scroll-snap-type: none;
+    }
+
+    .timeline-row {
+      height: auto !important;
+      aspect-ratio: auto !important;
+      scroll-snap-align: none;
+      scroll-snap-stop: normal;
+      opacity: 1 !important;
+      padding: var(--space-3xl) var(--gutter);
+    }
+
+    .timeline-row.is-faded {
+      opacity: 0.10 !important;
+    }
+
+    .timeline-row.is-active {
+      opacity: 1 !important;
+    }
+
+    .row-frame {
+      height: auto;
+      aspect-ratio: unset;
+      border: none;
+      position: static;
+    }
+
+    .row-content {
+      position: static;
+      aspect-ratio: unset;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: auto;
+    }
+
+    .row-bubble {
+      position: static;
+      transform: none;
+      width: 36px;
+      height: 36px;
+      margin-bottom: var(--space-sm);
+    }
+
+    .row-image-left .row-image-wrap,
+    .row-image-right .row-image-wrap,
+    .row-image-left .row-meta,
+    .row-image-right .row-meta {
+      grid-column: 1;
+    }
+
+    .row-image-wrap {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16 / 9 !important;
+      min-height: 0;
+      flex-shrink: 0;
+    }
+
+    .row-image-link {
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .row-image {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16 / 9 !important;
+      object-fit: cover;
+    }
+
+    .row-meta {
+      padding: var(--space-xl) 0;
+      height: auto;
+    }
+
+    .timeline-item {
+      opacity: 1;
+      transform: none;
+    }
   }
 </style>

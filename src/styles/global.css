@@ -105,6 +105,17 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Work page: only .timeline scrolls, not body or html */
+html:has(.page-work) {
+  overflow: hidden;
+  height: 100vh;
+}
+
+body:has(.page-work) {
+  overflow: hidden;
+  height: 100vh;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
