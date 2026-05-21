@@ -42,4 +42,12 @@ The work (and the site around it) carries personality that feels human and lived
 
 ## Accessibility & Inclusion
 
-Default to WCAG AA. Reduced motion should be respected. The site should work across devices and browsers. No specific known user accommodations to account for yet — revisit if needed when the design takes shape.
+Default to WCAG AA. Reduced motion should be respected. The site should work across devices and browsers. No specific known user accommodations to account for yet.
+
+## Technical
+
+- **Framework:** Astro 6 (static output)
+- **Hosting:** GitHub Pages via `.github/workflows/deploy.yml`
+- **Fonts:** Google Fonts (DM Mono)
+- **Colors:** OKLCH throughout
+- **Build:** `npm run build` → `dist/` (static HTML/CSS)
