@@ -1,0 +1,256 @@
+---
+import Base from '../layouts/Base.astro';
+
+/* Project data — replace with real work */
+const projects = [
+  {
+    slug: 'still-life-series',
+    title: 'Still Life Series',
+    category: 'Oil Painting',
+    year: '2024',
+    description: 'A series of oil paintings exploring domestic objects under natural light.',
+    image: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
+    featured: true,
+  },
+  {
+    slug: 'editorial-spreads',
+    title: 'Editorial Spreads',
+    category: 'Editorial',
+    year: '2024',
+    description: 'Magazine layout design for a quarterly arts publication.',
+    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80',
+    featured: true,
+  },
+  {
+    slug: 'motion-identity',
+    title: 'Motion Identity',
+    category: 'Motion',
+    year: '2023',
+    description: 'Animated brand identity for a creative studio.',
+    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80',
+    featured: true,
+  },
+  {
+    slug: 'illustration-series',
+    title: 'Illustration Series',
+    category: 'Illustration',
+    year: '2023',
+    description: 'A collection of hand-drawn illustrations for a children\'s book.',
+    image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80',
+    featured: true,
+  },
+];
+---
+
+<Base title="Mengmeng — Graphic Designer" description="Graphic designer — illustration, motion, editorial, oil painting.">
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Graphic Designer</p>
+      <h1 class="hero-heading">
+        Illustration<br />Motion<br />Editorial
+      </h1>
+      <p class="hero-sub">
+        Oil painting foundation. Based in design.
+      </p>
+    </div>
+  </section>
+
+  <section class="work-section">
+    <div class="work-inner">
+      <header class="work-header">
+        <h2 class="work-title">Selected Work</h2>
+        <a href="/work" class="work-all-link">View all →</a>
+      </header>
+
+      <ul class="work-list">
+        {projects.map((project, index) => (
+          <li class="work-item">
+            <a href={`/work/${project.slug}`} class="work-link">
+              <div class="work-image-wrap">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  class="work-image"
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                />
+                <div class="work-image-overlay" aria-hidden="true" />
+              </div>
+              <div class="work-meta">
+                <span class="work-category">{project.category}</span>
+                <h3 class="work-name">{project.title}</h3>
+                <p class="work-desc">{project.description}</p>
+                <span class="work-year">{project.year}</span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ── Hero ────────────────────────────────────────────────── */
+  .hero {
+    padding: var(--space-5xl) var(--gutter) var(--space-4xl);
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .hero-inner {
+    max-width: 24ch;
+  }
+
+  .hero-eyebrow {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-neutral-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero-heading {
+    font-size: var(--text-display);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    color: var(--color-neutral-text);
+    margin-bottom: var(--space-xl);
+  }
+
+  .hero-sub {
+    font-size: var(--text-title);
+    font-weight: var(--weight-light);
+    color: var(--color-neutral-muted);
+    line-height: var(--leading-snug);
+    max-width: 32ch;
+  }
+
+  /* ── Work Section ────────────────────────────────────────── */
+  .work-section {
+    padding: 0 var(--gutter) var(--space-5xl);
+  }
+
+  .work-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .work-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-neutral-border);
+  }
+
+  .work-title {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-neutral-muted);
+  }
+
+  .work-all-link {
+    font-size: var(--text-small);
+    color: var(--color-neutral-muted);
+    transition: color var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .work-all-link:hover {
+    color: var(--color-primary);
+  }
+
+  /* ── Work List ───────────────────────────────────────────── */
+  .work-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3xl) var(--space-2xl);
+  }
+
+  @media (max-width: 768px) {
+    .work-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .work-item {
+    list-style: none;
+  }
+
+  .work-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Image */
+  .work-image-wrap {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-neutral-surface);
+    margin-bottom: var(--space-md);
+  }
+
+  .work-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--duration-slow) var(--ease-out-quart);
+  }
+
+  .work-link:hover .work-image {
+    transform: scale(1.03);
+  }
+
+  .work-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 60%,
+      oklch(0% 0 0 / 0.08) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Meta */
+  .work-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2xs);
+  }
+
+  .work-category {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .work-name {
+    font-size: var(--text-title);
+    font-weight: var(--weight-regular);
+    color: var(--color-neutral-text);
+    line-height: var(--leading-snug);
+  }
+
+  .work-desc {
+    font-size: var(--text-small);
+    color: var(--color-neutral-muted);
+    line-height: var(--leading-body);
+    margin-top: var(--space-2xs);
+  }
+
+  .work-year {
+    font-size: var(--text-label);
+    color: var(--color-neutral-muted);
+    margin-top: var(--space-xs);
+  }
+</style>

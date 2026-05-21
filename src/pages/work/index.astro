@@ -1,0 +1,209 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Work — Mengmeng" description="Selected projects by Mengmeng — illustration, motion, editorial, oil painting.">
+  <div class="page-work">
+    <header class="page-header">
+      <div class="page-header-inner">
+        <h1 class="page-title">Work</h1>
+        <p class="page-subtitle">Illustration, motion, editorial, oil painting.</p>
+      </div>
+    </header>
+
+    <section class="work-body">
+      <p class="work-intro">
+        A selection of projects spanning illustration, motion design, editorial layout, and oil painting.
+        Each piece reflects a commitment to craft and a love for the details that make work worth noticing.
+      </p>
+
+      <!-- Work grid populated by client-side JS from embedded data -->
+      <ul class="work-grid" id="work-grid">
+        <!-- Injected by work-data.js -->
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<script>
+  const projects = [
+    {
+      slug: 'still-life-series',
+      title: 'Still Life Series',
+      category: 'Oil Painting',
+      year: '2024',
+      description: 'A series of oil paintings exploring domestic objects under natural light.',
+      image: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
+    },
+    {
+      slug: 'editorial-spreads',
+      title: 'Editorial Spreads',
+      category: 'Editorial',
+      year: '2024',
+      description: 'Magazine layout design for a quarterly arts publication.',
+      image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80',
+    },
+    {
+      slug: 'motion-identity',
+      title: 'Motion Identity',
+      category: 'Motion',
+      year: '2023',
+      description: 'Animated brand identity for a creative studio.',
+      image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80',
+    },
+    {
+      slug: 'illustration-series',
+      title: 'Illustration Series',
+      category: 'Illustration',
+      year: '2023',
+      description: 'A collection of hand-drawn illustrations for a children\'s book.',
+      image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80',
+    },
+    {
+      slug: 'type-poster',
+      title: 'Type Poster Series',
+      category: 'Editorial',
+      year: '2023',
+      description: 'Experimental typographic posters combining letterpress and digital.',
+      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+    },
+    {
+      slug: 'brand-identity',
+      title: 'Brand Identity',
+      category: 'Illustration',
+      year: '2022',
+      description: 'Complete visual identity for a small-batch ceramics brand.',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    },
+  ];
+
+  const grid = document.getElementById('work-grid');
+  if (grid) {
+    grid.innerHTML = projects.map(p => `
+      <li class="work-grid-item">
+        <a href="/work/${p.slug}" class="work-grid-link">
+          <div class="work-grid-image-wrap">
+            <img src="${p.image}" alt="${p.title}" class="work-grid-image" loading="lazy" />
+          </div>
+          <div class="work-grid-meta">
+            <span class="work-grid-category">${p.category}</span>
+            <span class="work-grid-name">${p.title}</span>
+            <span class="work-grid-year">${p.year}</span>
+          </div>
+        </a>
+      </li>
+    `).join('');
+  }
+</script>
+
+<style>
+  /* ── Page Header ─────────────────────────────────────────── */
+  .page-header {
+    padding: var(--space-4xl) var(--gutter) var(--space-2xl);
+    border-bottom: 1px solid var(--color-neutral-border);
+  }
+
+  .page-header-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .page-title {
+    font-size: var(--text-headline);
+    font-weight: var(--weight-light);
+    letter-spacing: -0.02em;
+    color: var(--color-neutral-text);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-sm);
+  }
+
+  .page-subtitle {
+    font-size: var(--text-body);
+    color: var(--color-neutral-muted);
+    font-weight: var(--weight-light);
+  }
+
+  /* ── Work Body ───────────────────────────────────────────── */
+  .work-body {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--gutter) var(--space-5xl);
+  }
+
+  .work-intro {
+    font-size: var(--text-body);
+    color: var(--color-neutral-muted);
+    max-width: 56ch;
+    line-height: var(--leading-body);
+    margin-bottom: var(--space-3xl);
+    font-weight: var(--weight-light);
+  }
+
+  /* ── Work Grid ───────────────────────────────────────────── */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2xl) var(--space-xl);
+  }
+
+  @media (max-width: 900px) {
+    .work-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 560px) {
+    .work-grid { grid-template-columns: 1fr; }
+  }
+
+  .work-grid-item {
+    list-style: none;
+  }
+
+  .work-grid-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .work-grid-image-wrap {
+    overflow: hidden;
+    background: var(--color-neutral-surface);
+    margin-bottom: var(--space-sm);
+  }
+
+  .work-grid-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--duration-slow) var(--ease-out-quart);
+  }
+
+  .work-grid-link:hover .work-grid-image {
+    transform: scale(1.04);
+  }
+
+  .work-grid-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .work-grid-category {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+
+  .work-grid-name {
+    font-size: var(--text-body);
+    font-weight: var(--weight-regular);
+    color: var(--color-neutral-text);
+  }
+
+  .work-grid-year {
+    font-size: var(--text-label);
+    color: var(--color-neutral-muted);
+  }
+</style>

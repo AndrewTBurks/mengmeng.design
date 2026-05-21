@@ -1,0 +1,219 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="About — Mengmeng" description="Mengmeng — graphic designer with a background in oil painting, specializing in illustration, motion, and editorial design.">
+  <div class="page-about">
+    <div class="about-layout">
+      <div class="about-image-col">
+        <div class="about-image-wrap">
+          <img
+            src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=700&q=80"
+            alt="Studio workspace with paints and sketches"
+            class="about-image"
+            loading="eager"
+          />
+        </div>
+        <p class="about-image-caption">Studio, 2024</p>
+      </div>
+
+      <div class="about-text-col">
+        <header class="about-header">
+          <h1 class="about-title">About</h1>
+        </header>
+
+        <div class="about-body">
+          <p class="about-lead">
+            Graphic designer working across illustration, motion, and editorial design.
+            Trained in oil painting, which still shows in everything — the way light falls,
+            how texture communicates weight.
+          </p>
+
+          <p>
+            I approach each project as an opportunity to make something worth noticing.
+            Not necessarily loud — often the best work is quiet and precise.
+            The details nobody talks about are usually the ones that matter most.
+          </p>
+
+          <p>
+            Available for freelance projects and select collaborations.
+            I'm particularly drawn to work that has something to say and the courage to say it plainly.
+          </p>
+
+          <div class="about-divider" aria-hidden="true" />
+
+          <div class="about-details">
+            <div class="about-detail-group">
+              <h2 class="about-detail-label">Capabilities</h2>
+              <ul class="about-detail-list">
+                <li>Illustration</li>
+                <li>Motion Design</li>
+                <li>Editorial Layout</li>
+                <li>Brand Identity</li>
+                <li>Oil Painting</li>
+              </ul>
+            </div>
+
+            <div class="about-detail-group">
+              <h2 class="about-detail-label">Contact</h2>
+              <ul class="about-detail-list">
+                <li><a href="mailto:hello@mengmeng.design">hello@mengmeng.design</a></li>
+                <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+                <li><a href="https://are.na" target="_blank" rel="noopener">Are.na</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  /* ── Layout ──────────────────────────────────────────────── */
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    min-height: calc(100dvh - 4rem);
+  }
+
+  @media (max-width: 768px) {
+    .about-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Image Column ────────────────────────────────────────── */
+  .about-image-col {
+    border-right: 1px solid var(--color-neutral-border);
+    padding: var(--space-3xl) var(--space-xl) var(--space-3xl) var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  @media (max-width: 768px) {
+    .about-image-col {
+      border-right: none;
+      border-bottom: 1px solid var(--color-neutral-border);
+      padding: var(--space-2xl) var(--gutter);
+    }
+  }
+
+  .about-image-wrap {
+    overflow: hidden;
+    background: var(--color-neutral-surface);
+  }
+
+  .about-image {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+  }
+
+  .about-image-caption {
+    font-size: var(--text-label);
+    color: var(--color-neutral-muted);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  /* ── Text Column ─────────────────────────────────────────── */
+  .about-text-col {
+    padding: var(--space-3xl) var(--gutter) var(--space-3xl) var(--space-xl);
+    max-width: 60ch;
+  }
+
+  @media (max-width: 768px) {
+    .about-text-col {
+      padding: var(--space-2xl) var(--gutter);
+    }
+  }
+
+  .about-header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .about-title {
+    font-size: var(--text-headline);
+    font-weight: var(--weight-light);
+    letter-spacing: -0.02em;
+    color: var(--color-neutral-text);
+    line-height: var(--leading-tight);
+  }
+
+  /* ── Body ────────────────────────────────────────────────── */
+  .about-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .about-lead {
+    font-size: var(--text-title);
+    font-weight: var(--weight-light);
+    color: var(--color-neutral-text);
+    line-height: var(--leading-snug);
+  }
+
+  .about-body p {
+    font-size: var(--text-body);
+    font-weight: var(--weight-light);
+    color: var(--color-neutral-muted);
+    line-height: var(--leading-body);
+  }
+
+  .about-divider {
+    width: 3rem;
+    height: 1px;
+    background: var(--color-neutral-border);
+    margin: var(--space-md) 0;
+  }
+
+  /* ── Details ─────────────────────────────────────────────── */
+  .about-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    margin-top: var(--space-sm);
+  }
+
+  .about-detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .about-detail-label {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-neutral-muted);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .about-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .about-detail-list li {
+    font-size: var(--text-small);
+    color: var(--color-neutral-text);
+    font-weight: var(--weight-light);
+  }
+
+  .about-detail-list a {
+    color: var(--color-neutral-text);
+    text-decoration: underline;
+    text-decoration-color: var(--color-neutral-border);
+    text-underline-offset: 3px;
+    transition: text-decoration-color var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .about-detail-list a:hover {
+    text-decoration-color: var(--color-primary);
+  }
+</style>

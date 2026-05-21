@@ -1,0 +1,153 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Graphic designer — illustration, motion, editorial, oil painting.',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://mengmeng.design');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Mengmeng" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav">
+        <a href="/" class="nav-wordmark">mengmeng.design</a>
+        <ul class="nav-links">
+          <li><a href="/work">Work</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p class="footer-copy">
+        <span class="footer-muted">©</span> {new Date().getFullYear()} Mengmeng
+      </p>
+      <ul class="footer-links">
+        <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://are.na" target="_blank" rel="noopener">Are.na</a></li>
+        <li><a href="mailto:hello@mengmeng.design">Email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>
+
+<style>
+  /* ── Header ─────────────────────────────────────────────── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--color-neutral-bg);
+    border-bottom: 1px solid var(--color-neutral-border);
+    padding: 0 var(--gutter);
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    height: 4rem;
+  }
+
+  .nav-wordmark {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-neutral-text);
+    transition: color var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .nav-wordmark:hover {
+    color: var(--color-primary);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .nav-links a {
+    font-size: var(--text-small);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-neutral-muted);
+    transition: color var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .nav-links a:hover {
+    color: var(--color-neutral-text);
+  }
+
+  /* ── Main ───────────────────────────────────────────────── */
+  main {
+    min-height: calc(100dvh - 4rem - 5rem);
+  }
+
+  /* ── Footer ─────────────────────────────────────────────── */
+  .site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-lg) var(--gutter);
+    border-top: 1px solid var(--color-neutral-border);
+    font-size: var(--text-small);
+  }
+
+  .footer-copy {
+    color: var(--color-neutral-muted);
+  }
+
+  .footer-muted {
+    color: var(--color-neutral-muted);
+    margin-right: 0.2em;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .footer-links a {
+    color: var(--color-neutral-muted);
+    transition: color var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .footer-links a:hover {
+    color: var(--color-neutral-text);
+  }
+</style>
