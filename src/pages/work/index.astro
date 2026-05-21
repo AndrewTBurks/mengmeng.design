@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Footer from '../../components/Footer.astro';
+import ProjectImage from '../../components/ProjectImage.astro';
 
 const allProjects = await getCollection('projects');
 const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
@@ -29,16 +30,11 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
           <div class="row-content">
             <div class="row-image-wrap">
               <a href={`/work/${project.id}`} class="row-image-link" aria-label={`View ${project.data.title}`}>
-                <img
+                <ProjectImage
                   src={project.data.image}
                   alt={project.data.title}
                   class="row-image"
-                  loading="lazy"
                 />
-                <div class="row-image-overlay" aria-hidden="true" />
-                <div class="row-image-soon" aria-hidden="true">
-                  <span class="row-image-soon-text">Coming soon</span>
-                </div>
               </a>
             </div>
 
@@ -297,8 +293,14 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
   }
 
   .row-image-link:hover .row-image {
-    filter: blur(16px);
-    transform: scale(1.06);
+    filter: blur(4px);
+    transform: scale(1.04);
+  }
+
+  .row-image-link:hover .row-image-soon {
+    background: oklch(0% 0 0 / 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .row-image-overlay {
@@ -317,16 +319,16 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
     outline-offset: 4px;
   }
 
-  /* Coming soon overlay */
+  /* Coming soon overlay — always visible since images aren't final */
   .row-image-soon {
+    display: flex !important;
     position: absolute;
     inset: 0;
-    display: flex;
     align-items: center;
     justify-content: center;
-    background: oklch(0% 0 0 / 0.2);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: oklch(0% 0 0 / 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     pointer-events: none;
   }
 
@@ -456,6 +458,10 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
       height: auto !important;
       aspect-ratio: 16 / 9 !important;
       object-fit: cover;
+    }
+
+    .row-image-soon {
+      display: flex !important;
     }
 
     .row-meta {

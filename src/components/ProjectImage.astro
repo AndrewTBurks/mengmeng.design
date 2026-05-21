@@ -1,0 +1,70 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+  class?: string;
+}
+
+const { src, alt = '', class: className } = Astro.props;
+const isPlaceholder = src.includes('unsplash.com');
+---
+
+<div class:list={['project-image-wrap', { 'is-placeholder': isPlaceholder }, className]}>
+  <img src={src} alt={alt} class="project-image" loading="lazy" />
+  {isPlaceholder && (
+    <>
+      <div class="project-image-overlay" aria-hidden="true" />
+      <div class="project-image-soon" aria-hidden="true">
+        <span class="project-image-soon-text">Coming soon</span>
+      </div>
+    </>
+  )}
+</div>
+
+<style>
+  .project-image-wrap {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-neutral-surface);
+  }
+
+  .project-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      oklch(0% 0 0 / 0.06) 100%
+    );
+    pointer-events: none;
+  }
+
+  .project-image-soon {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: oklch(0% 0 0 / 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    pointer-events: none;
+  }
+
+  .project-image-soon-text {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: oklch(97% 0.006 50);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid oklch(97% 0.006 50 / 0.4);
+  }
+</style>

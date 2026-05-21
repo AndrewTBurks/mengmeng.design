@@ -1,19 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import ProjectImage from '../components/ProjectImage.astro';
 ---
 
 <Base title="About — Mengmeng" description="Mengmeng — graphic designer with a background in oil painting, specializing in illustration, motion, and editorial design.">
   <div class="page-about">
     <div class="about-layout">
       <div class="about-image-col">
-        <div class="about-image-wrap">
-          <img
-            src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=700&q=80"
-            alt="Studio workspace with paints and sketches"
-            class="about-image"
-            loading="eager"
-          />
-        </div>
+<ProjectImage
+              src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=700&q=80"
+              alt="Studio workspace with paints and sketches"
+            />
         <p class="about-image-caption">Studio, 2024</p>
       </div>
 
@@ -57,7 +54,7 @@ import Base from '../layouts/Base.astro';
             <div class="about-detail-group">
               <h2 class="about-detail-label">Contact</h2>
               <ul class="about-detail-list">
-                <li><a href="mailto:hello@mengmeng.design">hello@mengmeng.design</a></li>
+                <li><a href="mailto:Mengmeng%20Dong%3Chello@mengmeng.design%3E">hello@mengmeng.design</a></li>
                 <li><a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram (opens in new tab)">Instagram</a></li>
                 <li><a href="https://are.na" target="_blank" rel="noopener" aria-label="Are.na (opens in new tab)">Are.na</a></li>
               </ul>
@@ -101,8 +98,42 @@ import Base from '../layouts/Base.astro';
   }
 
   .about-image-wrap {
+    position: relative;
     overflow: hidden;
     background: var(--color-neutral-surface);
+  }
+
+  .about-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      oklch(0% 0 0 / 0.06) 100%
+    );
+    pointer-events: none;
+  }
+
+  .about-image-soon {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: oklch(0% 0 0 / 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    pointer-events: none;
+  }
+
+  .about-image-soon-text {
+    font-size: var(--text-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: oklch(97% 0.006 50);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid oklch(97% 0.006 50 / 0.4);
   }
 
   .about-image {
