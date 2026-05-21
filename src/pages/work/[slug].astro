@@ -187,10 +187,17 @@ const SHAKE_THRESHOLD = 13;
           return { rot, tx, ty, scale };
         });
 
+        // Move scattered frames out of the track and into the stage directly.
+        // This severs the inherited track translate3d so left/top anchor to the stage,
+        // not the track's transformed origin.
+        const stage = document.getElementById('carousel-stage');
+        targets.forEach((el) => {
+          stage?.appendChild(el);
+        });
+
         targets.forEach((el, i) => {
           const { rot, tx, ty, scale } = frameData[i];
           const z = Math.floor(Math.random() * n * 2) + 1;
-          // left: 0, top: 0 so CSS anchor is stage-origin — tx/ty are true absolute positions
           el.style.left = '0px';
           el.style.top = '0px';
           el.style.setProperty('--scatter-rot', `${rot}deg`);
@@ -215,8 +222,15 @@ const SHAKE_THRESHOLD = 13;
       }
 
       function reassemble() {
+        // Reassemble: move frames back to track and reset CSS vars
         if (!scattered) return;
         scattered = false;
+
+        // Move frames back from stage into track
+        const stage = document.getElementById('carousel-stage');
+        targets.forEach((el) => {
+          track?.appendChild(el);
+        });
 
         targets.forEach((el) => {
           (el as HTMLElement).style.transitionDelay = '';
@@ -349,14 +363,46 @@ const SHAKE_THRESHOLD = 13;
       });
 
       // Init
-      if (typeof DeviceMotionEvent !== 'undefined' && typeof (DeviceMotionEvent as any).requestPermission === 'function') {
-        (DeviceMotionEvent as any).requestPermission()
-          .then((perm: string) => {
-            if (perm === 'granted') window.addEventListener('devicemotion', onMotion);
-          })
-          .catch(() => {});
-      } else {
+      let motionGranted = false;
+
+      function enableMotion() {
         window.addEventListener('devicemotion', onMotion);
+        motionGranted = true;
+      }
+
+      if (typeof DeviceMotionEvent !== 'undefined' && typeof (DeviceMotionEvent as any).requestPermission === 'function') {
+        // iOS 13+ requires user gesture to show permission prompt
+        // Show a tap prompt so the user can grant it
+        const hint = document.querySelector<HTMLElement>('.shake-hint');
+        const originalText = hint?.textContent ?? '';
+
+        const requestPermission = () => {
+          (DeviceMotionEvent as any).requestPermission()
+            .then((perm: string) => {
+              if (perm === 'granted') enableMotion();
+              if (hint) {
+                if (perm === 'granted') {
+                  hint.textContent = 'Shake or press S to scatter';
+                } else {
+                  hint.textContent = 'Motion denied — press S to scatter';
+                }
+              }
+            })
+            .catch(() => {
+              if (hint) hint.textContent = 'Press S to scatter';
+            });
+        };
+
+        // Replace hint with tappable grant prompt
+        if (hint) {
+          hint.textContent = 'Tap to enable shake →';
+          hint.style.cursor = 'pointer';
+          hint.addEventListener('click', () => requestPermission(), { once: true });
+          hint.addEventListener('touchend', () => requestPermission(), { once: true });
+        }
+      } else {
+        // Android and older iOS — no permission needed
+        enableMotion();
       }
 
       // Resize handler
