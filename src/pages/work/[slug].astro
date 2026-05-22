@@ -167,15 +167,13 @@ const allImages = [...(project.data.images ?? [])];
         const padding = 12;
         const availableW = stageWidth - padding * 2;
         const availableH = stageHeight - padding * 2;
-        // ONE shared scatter center: visual center of the stage in stage coords
+        // ONE shared scatter center: true visual center of the stage in viewport coords
+        // stage.getBoundingClientRect() gives viewport-relative position of the stage element
+        // visualCenterX/Y must be viewport coords to match what translate3d(-50%,-50%,0)
+        // + left:0; top:0 on each scattered frame expects (element center lands at tx,ty)
         const stageRect = stage ? stage.getBoundingClientRect() : { left: 0, top: 0, width: stageWidth, height: stageHeight };
-        // Stage visual center: stageBoundingRect.left is the stage's viewport-x, so
-        // stageCenterX = stageRect.left + stageWidth/2 (viewport coords).
-        // tx/ty go into CSS custom props used by translate3d(-50%,-50%,0) on each
-        // scattered frame (midpoint-anchored via left:0; top:0 on .is-scattered),
-        // so tx/ty must be in stage viewport-coords — exactly stageRect.left + stageWidth/2.
         const visualCenterX = stageRect.left + stageWidth / 2;
-        const visualCenterY = stageHeight / 2;
+        const visualCenterY = stageRect.top + stageHeight / 2;
 
         targets.forEach((el, i) => {
           const rot = (Math.random() - 0.5) * 36;
