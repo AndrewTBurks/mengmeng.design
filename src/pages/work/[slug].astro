@@ -124,12 +124,11 @@ const allImages = [...(project.data.images ?? [])];
       }
 
       function getCarouselWidth() {
-        // Use getBoundingClientRect so we get the visual (post-transform) width, not the CSS layout width
-        return stage ? stage.getBoundingClientRect().width : window.innerWidth;
+        return stage ? stage.offsetWidth : window.innerWidth;
       }
 
       function getCarouselHeight() {
-        return stage ? stage.getBoundingClientRect().height : window.innerHeight;
+        return stage ? stage.offsetHeight : window.innerHeight;
       }
 
       function goTo(index: number, animate = true) {
@@ -161,36 +160,24 @@ const allImages = [...(project.data.images ?? [])];
         const frameWidth = frameEl ? frameEl.offsetWidth : stageWidth;
         const frameHeight = frameEl ? frameEl.offsetHeight : stageHeight;
 
-        // Snapshot each frame's visual position relative to the stage.
-        // getBoundingClientRect gives positions ignoring CSS transforms on ancestors,
-        // so we compensate: subtract currentTranslate to get the frame's true offset
-        // within the track's *visual* coordinate space.
-        const stageRect = stage.getBoundingClientRect();
-        const frameRects = targets.map((el) => {
-          const r = el.getBoundingClientRect();
-          const left = r.left - stageRect.left - currentTranslate;
-          const top = r.top - stageRect.top;
-          return { left, top };
-        });
-
         const n = targets.length;
         // Scale so all N images fit within stage with equal area
         const baseScale = 1 / Math.sqrt(n);
-        // Minimal padding around the stage edges
+        // Padding from stage edges
         const padding = 12;
         const availableW = stageWidth - padding * 2;
         const availableH = stageHeight - padding * 2;
-        // Scatter target: the visual center of the stage
-        const centerX = stageWidth / 2;
-        const centerY = stageHeight / 2;
+        // Scatter center: account for track translate so it's relative to the visible carousel position
+        const scatterCenterX = stageWidth / 2 + currentTranslate / 2;
+        const scatterCenterY = stageHeight / 2;
 
         const frameData = targets.map(() => {
           const rot = (Math.random() - 0.5) * 36;
-          // Scatter from stage center with a radial offset — images spread across the full stage
+          // Scatter from the track's visual center (not stage origin)
           const scatterR = Math.random() * Math.min(availableW, availableH) * 0.45;
           const scatterA = Math.random() * Math.PI * 2;
-          const tx = centerX + Math.cos(scatterA) * scatterR;
-          const ty = centerY + Math.sin(scatterA) * scatterR;
+          const tx = scatterCenterX + Math.cos(scatterA) * scatterR;
+          const ty = scatterCenterY + Math.sin(scatterA) * scatterR;
           // Add slight individual variation on top of the uniform scale
           const scale = baseScale * (0.85 + Math.random() * 0.3);
           return { rot, tx, ty, scale };
