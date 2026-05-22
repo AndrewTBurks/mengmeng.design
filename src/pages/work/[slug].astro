@@ -446,6 +446,7 @@ const allImages = [...(project.data.images ?? [])];
     background: #fff;
     box-shadow: 0 4px 14px oklch(0% 0 0 / 0.14);
     box-sizing: border-box;
+    padding: 0 7px 7px;
     transform:
       translate3d(var(--scatter-tx, 0px), var(--scatter-ty, 0px), 0)
       rotate(var(--scatter-rot, 0deg));
@@ -620,7 +621,8 @@ const allImages = [...(project.data.images ?? [])];
       align-items: flex-start;
       gap: var(--space-sm);
     }
-    .carousel-frame { padding: 7px 7px 22px; }
+    .carousel-frame { padding: 0 7px 7px; }
+    .polaroid-caption { padding: 8px 0 6px; min-height: 0; }
     .shake-hint { font-size: 10px; }
   }
 </style>
