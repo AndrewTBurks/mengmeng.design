@@ -124,7 +124,12 @@ const allImages = [...(project.data.images ?? [])];
       }
 
       function getCarouselWidth() {
-        return stage ? stage.offsetWidth : window.innerWidth;
+        // Use getBoundingClientRect so we get the visual (post-transform) width, not the CSS layout width
+        return stage ? stage.getBoundingClientRect().width : window.innerWidth;
+      }
+
+      function getCarouselHeight() {
+        return stage ? stage.getBoundingClientRect().height : window.innerHeight;
       }
 
       function goTo(index: number, animate = true) {
@@ -151,7 +156,7 @@ const allImages = [...(project.data.images ?? [])];
         if (autoReassembleTimer) clearTimeout(autoReassembleTimer);
 
         const stageWidth = getCarouselWidth();
-        const stageHeight = stage ? stage.offsetHeight : 300;
+        const stageHeight = getCarouselHeight();
         const frameEl = targets[0] as HTMLElement | undefined;
         const frameWidth = frameEl ? frameEl.offsetWidth : stageWidth;
         const frameHeight = frameEl ? frameEl.offsetHeight : stageHeight;
@@ -349,14 +354,36 @@ const allImages = [...(project.data.images ?? [])];
         if (e.key === 'ArrowRight') { e.preventDefault(); goTo(currentIndex + 1); }
       });
 
-      // Init
+      // Init — iOS 13+ requires user gesture for DeviceMotion permission
+      const hint = document.querySelector<HTMLElement>('.shake-hint');
+      const originalHint = hint?.textContent ?? 'Shake or press S to scatter';
+
       if (typeof DeviceMotionEvent !== 'undefined' && typeof (DeviceMotionEvent as any).requestPermission === 'function') {
-        (DeviceMotionEvent as any).requestPermission()
-          .then((perm: string) => {
-            if (perm === 'granted') window.addEventListener('devicemotion', onMotion);
-          })
-          .catch(() => {});
+        // iOS 13+: show tappable prompt, request permission on tap
+        const requestMotion = () => {
+          (DeviceMotionEvent as any).requestPermission()
+            .then((perm: string) => {
+              if (perm === 'granted') {
+                window.addEventListener('devicemotion', onMotion);
+                if (hint) hint.textContent = 'Shake or press S to scatter';
+              } else {
+                if (hint) hint.textContent = 'Motion denied — press S to scatter';
+              }
+            })
+            .catch(() => {
+              if (hint) hint.textContent = 'Press S to scatter';
+            });
+        };
+
+        if (hint) {
+          hint.textContent = 'Tap to enable shake →';
+          hint.style.cursor = 'pointer';
+          const enableOnce = () => { requestMotion(); hint?.removeEventListener('click', enableOnce); hint?.removeEventListener('touchend', enableOnce); };
+          hint.addEventListener('click', enableOnce);
+          hint.addEventListener('touchend', enableOnce);
+        }
       } else {
+        // Android and older iOS: no permission needed
         window.addEventListener('devicemotion', onMotion);
       }
 
