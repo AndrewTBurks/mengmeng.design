@@ -181,8 +181,8 @@ const allImages = [...(project.data.images ?? [])];
 
         const frameData = targets.map(() => {
           const rot = (Math.random() - 0.5) * 36;
-          // Scatter from stage center with a small random scatter radius
-          const scatterR = Math.random() * Math.min(availableW, availableH) * 0.25;
+          // Scatter from stage center with a radial offset — images spread across the full stage
+          const scatterR = Math.random() * Math.min(availableW, availableH) * 0.45;
           const scatterA = Math.random() * Math.PI * 2;
           const tx = centerX + Math.cos(scatterA) * scatterR;
           const ty = centerY + Math.sin(scatterA) * scatterR;
