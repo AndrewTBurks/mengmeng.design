@@ -1,14 +1,14 @@
 ---
-import { getCollection, render } from 'astro:content';
-import Base from '../../layouts/Base.astro';
-import ProjectImage from '../../components/ProjectImage.astro';
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import ProjectImage from "../../components/ProjectImage.astro";
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-  return projects.map((project) => ({
-    params: { slug: project.id },
-    props: { project },
-  }));
+    const projects = await getCollection("projects");
+    return projects.map((project) => ({
+        params: { slug: project.id },
+        props: { project },
+    }));
 }
 
 const { project } = Astro.props;
@@ -18,630 +18,787 @@ const allImages = [...(project.data.images ?? [])];
 ---
 
 <Base
-  title={`${project.data.title} — Mengmeng`}
-  description={project.data.description}
+    title={`${project.data.title} — Mengmeng`}
+    description={project.data.description}
 >
-  <div class="page-project">
-    <div class="project-header">
-      <a href="/work" class="back-link">← Back to work</a>
-      <div class="project-meta">
-        <span class="project-category">{project.data.category}</span>
-        <span class="project-year">{project.data.year}</span>
-      </div>
-    </div>
-
-    <div class="project-carousel" id="carousel" role="region" aria-label="Image gallery">
-      <div class="carousel-stage" id="carousel-stage">
-        <div class="carousel-track" id="carousel-track">
-          {allImages.map((img: any, i: number) => {
-            const src = typeof img === 'string' ? img : img.src;
-            return (
-            <div class="carousel-frame" data-shake-target>
-              <div class="polaroid">
-                <ProjectImage
-                  src={src}
-                  alt={`${project.data.title} — image ${i + 1}`}
-                  class="carousel-image"
-                />
-                {typeof img === 'object' && img.caption && (
-                  <p class="polaroid-caption">{img.caption}</p>
-                )}
-              </div>
+    <div class="page-project">
+        <div class="project-header">
+            <a href="/work" class="back-link">← Back to work</a>
+            <div class="project-meta">
+                <span class="project-category">{project.data.category}</span>
+                <span class="project-year">{project.data.year}</span>
             </div>
+        </div>
+
+        <div
+            class="project-carousel"
+            id="carousel"
+            role="region"
+            aria-label="Image gallery"
+        >
+            <div class="carousel-stage" id="carousel-stage">
+                <div class="carousel-track" id="carousel-track">
+                    {
+                        allImages.map((img: any, i: number) => {
+                            const src = typeof img === "string" ? img : img.src;
+                            return (
+                                <div class="carousel-frame" data-shake-target>
+                                    <div class="polaroid">
+                                        <ProjectImage
+                                            src={src}
+                                            alt={`${project.data.title} — image ${i + 1}`}
+                                            class="carousel-image"
+                                        />
+                                        {typeof img === "object" &&
+                                            img.caption && (
+                                                <p class="polaroid-caption">
+                                                    {img.caption}
+                                                </p>
+                                            )}
+                                    </div>
+                                </div>
+                            );
+                        })
+                    }
+                </div>
+            </div>
+
+            <div class="carousel-nav">
+                <button
+                    type="button"
+                    class="carousel-arrow"
+                    id="prev-btn"
+                    aria-label="Previous image"
+                >
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M12 4l-6 6 6 6"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+
+                <div
+                    class="carousel-dots"
+                    role="tab list"
+                    aria-label="Image indicators"
+                >
+                    {
+                        allImages.map((_: string, i: number) => (
+                            <button
+                                type="button"
+                                class="carousel-dot"
+                                role="tab"
+                                aria-label={`Image ${i + 1}`}
+                                aria-selected={i === 0 ? "true" : "false"}
+                                data-index={i}
+                            />
+                        ))
+                    }
+                </div>
+
+                <button
+                    type="button"
+                    class="carousel-arrow"
+                    id="next-btn"
+                    aria-label="Next image"
+                >
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M8 4l6 6-6 6"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="shake-hint" aria-hidden="true">
+                Shake or press S to scatter
+            </p>
+        </div>
+
+        <div class="project-body">
+            <h1 class="project-title">{project.data.title}</h1>
+            <div class="project-description">
+                <p>{project.data.description}</p>
+            </div>
+            <div class="project-content">
+                <Content />
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const SHAKE_THRESHOLD = 18;
+            let lastX = 0,
+                lastY = 0,
+                lastZ = 0;
+            let lastShake = 0;
+            let currentIndex = 0;
+            let scattered = false;
+            let isDragging = false;
+            let startX = 0;
+            let slideStartIndex = 0;
+            let currentTranslate = 0;
+            let autoReassembleTimer: ReturnType<typeof setTimeout> | null =
+                null;
+            let targets: HTMLElement[] = [];
+
+            const stage = document.getElementById("carousel-stage");
+            const track = document.getElementById("carousel-track");
+            const dots =
+                document.querySelectorAll<HTMLButtonElement>(".carousel-dot");
+            const prevBtn = document.getElementById("prev-btn");
+            const nextBtn = document.getElementById("next-btn");
+
+            function collectTargets() {
+                targets = Array.from(
+                    document.querySelectorAll<HTMLElement>(
+                        "[data-shake-target]",
+                    ),
+                );
+            }
+
+            function setTranslate(px: number) {
+                currentTranslate = px;
+                if (track) track.style.transform = `translate3d(${px}px, 0, 0)`;
+            }
+
+            function getCarouselWidth() {
+                return stage ? stage.offsetWidth : window.innerWidth;
+            }
+
+            function getCarouselHeight() {
+                return stage ? stage.offsetHeight : window.innerHeight;
+            }
+
+            function goTo(index: number, animate = true) {
+                const total = dots.length;
+                currentIndex = ((index % total) + total) % total;
+                const frameWidth = targets[0]
+                    ? (targets[0] as HTMLElement).offsetWidth
+                    : getCarouselWidth();
+                const px = -currentIndex * (frameWidth + 8);
+                setTranslate(px);
+                if (track && animate) {
+                    track.style.transition =
+                        "transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)";
+                }
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle("is-active", i === currentIndex);
+                    dot.setAttribute(
+                        "aria-selected",
+                        i === currentIndex ? "true" : "false",
+                    );
+                });
+            }
+
+            function scatter() {
+                if (scattered) return;
+                scattered = true;
+                collectTargets();
+
+                if (autoReassembleTimer) clearTimeout(autoReassembleTimer);
+
+                const stageWidth = getCarouselWidth();
+                const stageHeight = getCarouselHeight();
+                const frameEl = targets[0] as HTMLElement | undefined;
+                const frameWidth = frameEl ? frameEl.offsetWidth : stageWidth;
+                const frameHeight = frameEl
+                    ? frameEl.offsetHeight
+                    : stageHeight;
+
+                const n = targets.length;
+                // Scale so all N images fit within stage with equal area
+                const baseScale = 1 / Math.sqrt(n);
+                // Padding from stage edges
+                const padding = 12;
+                const availableW = stageWidth - padding * 2;
+                const availableH = stageHeight - padding * 2;
+                // ONE shared scatter center: true visual center of the stage in viewport coords
+                // stage.getBoundingClientRect() gives viewport-relative position of the stage element
+                // visualCenterX/Y must be viewport coords to match what translate3d(-50%,-50%,0)
+                // + left:0; top:0 on each scattered frame expects (element center lands at tx,ty)
+                const stageRect = stage
+                    ? stage.getBoundingClientRect()
+                    : {
+                          left: 0,
+                          top: 0,
+                          width: stageWidth,
+                          height: stageHeight,
+                      };
+                const visualCenterX = stageRect.left + stageWidth / 2;
+                const visualCenterY = stageHeight / 2;
+                console.log(
+                    `[scatter] stageWidth=${stageWidth} stageHeight=${stageHeight} stageRect.left=${stageRect.left.toFixed(1)} stageRect.top=${stageRect.top.toFixed(1)} stageRect.width=${stageRect.width.toFixed(1)} stageRect.height=${stageRect.height.toFixed(1)} visualCenter=(${visualCenterX.toFixed(1)},${visualCenterY.toFixed(1)})`,
+                );
+
+                targets.forEach((el, i) => {
+                    const rot = (Math.random() - 0.5) * 36;
+                    const scatterR =
+                        (Math.random() * 0.25 + 0.2) *
+                        Math.min(availableW, availableH);
+                    const scatterA = Math.random() * Math.PI * 2;
+                    const tx =
+                        stageWidth / 2 +
+                        Math.cos(scatterA) * scatterR -
+                        currentTranslate;
+                    const ty = visualCenterY + Math.sin(scatterA) * scatterR;
+                    const scale = baseScale * (0.85 + Math.random() * 0.3);
+                    const z = Math.floor(Math.random() * n * 2) + 1;
+                    console.log(
+                        `[scatter] frame${i} visualCenter=(${visualCenterX.toFixed(1)},${visualCenterY.toFixed(1)}) scatterR=${scatterR.toFixed(1)} scatterA=${scatterA.toFixed(2)} tx=${tx.toFixed(1)} ty=${ty.toFixed(1)} scale=${scale.toFixed(3)}`,
+                    );
+                    // left: 0, top: 0 so CSS anchor is stage top-left — tx/ty are true absolute viewport coords
+                    el.style.left = "0px";
+                    el.style.top = "0px";
+                    el.style.setProperty("--scatter-rot", `${rot}deg`);
+                    el.style.setProperty("--scatter-tx", `${tx}px`);
+                    el.style.setProperty("--scatter-ty", `${ty}px`);
+                    el.style.setProperty("--scatter-scale", `${scale}`);
+                    (el as HTMLElement).style.transitionDelay = `${i * 40}ms`;
+                    (el as HTMLElement).style.zIndex = `${z}`;
+                    el.classList.add("is-scattered");
+                    console.log(
+                        `[scatter] frame${i} tx=${tx.toFixed(1)} ty=${ty.toFixed(1)} trackTranslateX=${track ? track.style.transform : "n/a"}`,
+                    );
+                });
+
+                // Show overflow when scattered so scaled frames can spread beyond stage bounds
+                stage?.classList.add("is-scattered");
+
+                const hint = document.querySelector<HTMLElement>(".shake-hint");
+                if (hint) hint.textContent = "Reassembling...";
+
+                autoReassembleTimer = setTimeout(reassemble, 3000);
+            }
+
+            function reassemble() {
+                if (!scattered) return;
+                scattered = false;
+
+                targets.forEach((el) => {
+                    (el as HTMLElement).style.transitionDelay = "";
+                    el.classList.remove("is-scattered");
+                    // Reset to defaults
+                    el.style.setProperty("--scatter-rot", "0deg");
+                    el.style.setProperty("--scatter-tx", "0px");
+                    el.style.setProperty("--scatter-ty", "0px");
+                    el.style.setProperty("--scatter-scale", "1");
+                    el.style.left = "";
+                    el.style.top = "";
+                });
+
+                stage?.classList.remove("is-scattered");
+
+                if (autoReassembleTimer) {
+                    clearTimeout(autoReassembleTimer);
+                    autoReassembleTimer = null;
+                }
+
+                const hint = document.querySelector<HTMLElement>(".shake-hint");
+                if (hint) hint.textContent = "Shake or press S to scatter";
+
+                // Snap back to current slide after reassemble transition
+                setTimeout(() => goTo(currentIndex, true), 400);
+            }
+
+            function onMotion(e: DeviceMotionEvent) {
+                const acc = e.accelerationIncludingGravity;
+                if (!acc || acc.x === null || acc.y === null || acc.z === null)
+                    return;
+
+                const x = acc.x,
+                    y = acc.y,
+                    z = acc.z;
+                const deltaX = Math.abs(x - lastX);
+                const deltaY = Math.abs(y - lastY);
+                const deltaZ = Math.abs(z - lastZ);
+
+                if (
+                    deltaX > SHAKE_THRESHOLD ||
+                    deltaY > SHAKE_THRESHOLD ||
+                    deltaZ > SHAKE_THRESHOLD
+                ) {
+                    const now = Date.now();
+                    if (now - lastShake > 1000) {
+                        lastShake = now;
+                        scatter();
+                    }
+                }
+
+                lastX = x;
+                lastY = y;
+                lastZ = z;
+            }
+
+            // Touch / drag swipe navigation
+            stage?.addEventListener(
+                "touchstart",
+                (e: TouchEvent) => {
+                    if (scattered) return;
+                    isDragging = true;
+                    startX = e.touches[0].clientX;
+                    slideStartIndex = currentIndex;
+                    if (track) track.style.transition = "none";
+                },
+                { passive: true },
             );
-          })}
-        </div>
-      </div>
 
-      <div class="carousel-nav">
-        <button type="button" class="carousel-arrow" id="prev-btn" aria-label="Previous image">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+            stage?.addEventListener(
+                "touchmove",
+                (e: TouchEvent) => {
+                    if (!isDragging || scattered) return;
+                    const dx = e.touches[0].clientX - startX;
+                    const frameWidth = targets[0]
+                        ? (targets[0] as HTMLElement).offsetWidth
+                        : getCarouselWidth();
+                    const base = -slideStartIndex * (frameWidth + 8);
+                    setTranslate(base + dx);
+                },
+                { passive: true },
+            );
 
-        <div class="carousel-dots" role="tab list" aria-label="Image indicators">
-          {allImages.map((_: string, i: number) => (
-            <button
-              type="button"
-              class="carousel-dot"
-              role="tab"
-              aria-label={`Image ${i + 1}`}
-              aria-selected={i === 0 ? 'true' : 'false'}
-              data-index={i}
-            />
-          ))}
-        </div>
-
-        <button type="button" class="carousel-arrow" id="next-btn" aria-label="Next image">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-
-      <p class="shake-hint" aria-hidden="true">Shake or press S to scatter</p>
-    </div>
-
-    <div class="project-body">
-      <h1 class="project-title">{project.data.title}</h1>
-      <div class="project-description">
-        <p>{project.data.description}</p>
-      </div>
-      <div class="project-content">
-        <Content />
-      </div>
-    </div>
-  </div>
-
-  <script>
-    (function () {
-      const SHAKE_THRESHOLD = 18;
-      let lastX = 0, lastY = 0, lastZ = 0;
-      let lastShake = 0;
-      let currentIndex = 0;
-      let scattered = false;
-      let isDragging = false;
-      let startX = 0;
-      let slideStartIndex = 0;
-      let currentTranslate = 0;
-      let autoReassembleTimer: ReturnType<typeof setTimeout> | null = null;
-      let targets: HTMLElement[] = [];
-
-      const stage = document.getElementById('carousel-stage');
-      const track = document.getElementById('carousel-track');
-      const dots = document.querySelectorAll<HTMLButtonElement>('.carousel-dot');
-      const prevBtn = document.getElementById('prev-btn');
-      const nextBtn = document.getElementById('next-btn');
-
-      function collectTargets() {
-        targets = Array.from(document.querySelectorAll<HTMLElement>('[data-shake-target]'));
-      }
-
-      function setTranslate(px: number) {
-        currentTranslate = px;
-        if (track) track.style.transform = `translate3d(${px}px, 0, 0)`;
-      }
-
-      function getCarouselWidth() {
-        return stage ? stage.offsetWidth : window.innerWidth;
-      }
-
-      function getCarouselHeight() {
-        return stage ? stage.offsetHeight : window.innerHeight;
-      }
-
-      function goTo(index: number, animate = true) {
-        const total = dots.length;
-        currentIndex = ((index % total) + total) % total;
-        const frameWidth = targets[0] ? (targets[0] as HTMLElement).offsetWidth : getCarouselWidth();
-        const px = -currentIndex * (frameWidth + 8);
-        setTranslate(px);
-        if (track && animate) {
-          track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-        }
-        dots.forEach((dot, i) => {
-          dot.classList.toggle('is-active', i === currentIndex);
-          dot.setAttribute('aria-selected', i === currentIndex ? 'true' : 'false');
-        });
-      }
-
-      function scatter() {
-        console.log('[scatter] called, scattered:', scattered);
-        if (scattered) return;
-        scattered = true;
-        collectTargets();
-
-        if (autoReassembleTimer) clearTimeout(autoReassembleTimer);
-
-        const stageWidth = getCarouselWidth();
-        const stageHeight = getCarouselHeight();
-        const frameEl = targets[0] as HTMLElement | undefined;
-        const frameWidth = frameEl ? frameEl.offsetWidth : stageWidth;
-        const frameHeight = frameEl ? frameEl.offsetHeight : stageHeight;
-
-        const n = targets.length;
-        // Scale so all N images fit within stage with equal area
-        const baseScale = 1 / Math.sqrt(n);
-        // Padding from stage edges
-        const padding = 12;
-        const availableW = stageWidth - padding * 2;
-        const availableH = stageHeight - padding * 2;
-        // ONE shared scatter center: true visual center of the stage in viewport coords
-        // stage.getBoundingClientRect() gives viewport-relative position of the stage element
-        // visualCenterX/Y must be viewport coords to match what translate3d(-50%,-50%,0)
-        // + left:0; top:0 on each scattered frame expects (element center lands at tx,ty)
-        const stageRect = stage ? stage.getBoundingClientRect() : { left: 0, top: 0, width: stageWidth, height: stageHeight };
-        const visualCenterX = stageRect.left + stageWidth / 2;
-        const visualCenterY = stageHeight / 2;
-
-        targets.forEach((el, i) => {
-          const rot = (Math.random() - 0.5) * 36;
-          const scatterR = Math.random() * Math.min(availableW, availableH) * 0.45;
-          const scatterA = Math.random() * Math.PI * 2;
-          const tx = visualCenterX + Math.cos(scatterA) * scatterR;
-          const ty = visualCenterY + Math.sin(scatterA) * scatterR;
-          const scale = baseScale * (0.85 + Math.random() * 0.3);
-          const z = Math.floor(Math.random() * n * 2) + 1;
-          // left: 0, top: 0 so CSS anchor is stage top-left — tx/ty are true absolute viewport coords
-          el.style.left = '0px';
-          el.style.top = '0px';
-          el.style.setProperty('--scatter-rot', `${rot}deg`);
-          el.style.setProperty('--scatter-tx', `${tx}px`);
-          el.style.setProperty('--scatter-ty', `${ty}px`);
-          el.style.setProperty('--scatter-scale', `${scale}`);
-          console.log(`[scatter] frame${i} CSS variables: --scatter-tx=${tx}px --scatter-ty=${ty}px --scatter-rot=${rot}deg --scatter-scale=${scale} | computed tx=${tx.toFixed(1)} ty=${ty.toFixed(1)}`);
-          console.log(`[scatter] frame${i} before classList.add: position=${getComputedStyle(el).position} left=${getComputedStyle(el).left} top=${getComputedStyle(el).top}`);
-          (el as HTMLElement).style.transitionDelay = `${i * 40}ms`;
-          (el as HTMLElement).style.zIndex = `${z}`;
-          el.classList.add('is-scattered');
-          console.log(`[scatter] frame${i} after classList.add: position=${getComputedStyle(el).position} left=${getComputedStyle(el).left} top=${getComputedStyle(el).top} transform=${getComputedStyle(el).transform}`);
-        });
-
-        // Show overflow when scattered so scaled frames can spread beyond stage bounds
-        stage?.classList.add('is-scattered');
-
-        const hint = document.querySelector<HTMLElement>('.shake-hint');
-        if (hint) hint.textContent = 'Reassembling...';
-
-        autoReassembleTimer = setTimeout(reassemble, 3000);
-      }
-
-      function reassemble() {
-        if (!scattered) return;
-        scattered = false;
-
-        targets.forEach((el) => {
-          (el as HTMLElement).style.transitionDelay = '';
-          el.classList.remove('is-scattered');
-          // Reset to defaults
-          el.style.setProperty('--scatter-rot', '0deg');
-          el.style.setProperty('--scatter-tx', '0px');
-          el.style.setProperty('--scatter-ty', '0px');
-          el.style.setProperty('--scatter-scale', '1');
-          el.style.left = '';
-          el.style.top = '';
-        });
-
-        stage?.classList.remove('is-scattered');
-
-        if (autoReassembleTimer) {
-          clearTimeout(autoReassembleTimer);
-          autoReassembleTimer = null;
-        }
-
-        const hint = document.querySelector<HTMLElement>('.shake-hint');
-        if (hint) hint.textContent = 'Shake or press S to scatter';
-
-        // Snap back to current slide after reassemble transition
-        setTimeout(() => goTo(currentIndex, true), 400);
-      }
-
-      function onMotion(e: DeviceMotionEvent) {
-        const acc = e.accelerationIncludingGravity;
-        if (!acc || acc.x === null || acc.y === null || acc.z === null) return;
-
-        const x = acc.x, y = acc.y, z = acc.z;
-        const deltaX = Math.abs(x - lastX);
-        const deltaY = Math.abs(y - lastY);
-        const deltaZ = Math.abs(z - lastZ);
-
-        if (deltaX > SHAKE_THRESHOLD || deltaY > SHAKE_THRESHOLD || deltaZ > SHAKE_THRESHOLD) {
-          const now = Date.now();
-          if (now - lastShake > 1000) {
-            lastShake = now;
-            scatter();
-          }
-        }
-
-        lastX = x; lastY = y; lastZ = z;
-      }
-
-      // Touch / drag swipe navigation
-      stage?.addEventListener('touchstart', (e: TouchEvent) => {
-        if (scattered) return;
-        isDragging = true;
-        startX = e.touches[0].clientX;
-        slideStartIndex = currentIndex;
-        if (track) track.style.transition = 'none';
-      }, { passive: true });
-
-      stage?.addEventListener('touchmove', (e: TouchEvent) => {
-        if (!isDragging || scattered) return;
-        const dx = e.touches[0].clientX - startX;
-        const frameWidth = targets[0] ? (targets[0] as HTMLElement).offsetWidth : getCarouselWidth();
-        const base = -slideStartIndex * (frameWidth + 8);
-        setTranslate(base + dx);
-      }, { passive: true });
-
-      stage?.addEventListener('touchend', (e: TouchEvent) => {
-        if (!isDragging) return;
-        isDragging = false;
-        const dx = e.changedTouches[0].clientX - startX;
-        const threshold = getCarouselWidth() * 0.18;
-        if (dx < -threshold) goTo(slideStartIndex + 1);
-        else if (dx > threshold) goTo(slideStartIndex - 1);
-        else goTo(slideStartIndex);
-      });
-
-      // Mouse drag (desktop testing)
-      let mouseDown = false;
-      stage?.addEventListener('mousedown', (e: MouseEvent) => {
-        if (scattered) return;
-        mouseDown = true;
-        startX = e.clientX;
-        slideStartIndex = currentIndex;
-        if (track) track.style.transition = 'none';
-      });
-      window.addEventListener('mousemove', (e: MouseEvent) => {
-        if (!mouseDown || scattered) return;
-        const dx = e.clientX - startX;
-        const frameWidth = targets[0] ? (targets[0] as HTMLElement).offsetWidth : getCarouselWidth();
-        const base = -slideStartIndex * (frameWidth + 8);
-        setTranslate(base + dx);
-      });
-      window.addEventListener('mouseup', (e: MouseEvent) => {
-        if (!mouseDown) return;
-        mouseDown = false;
-        const dx = e.clientX - startX;
-        const threshold = getCarouselWidth() * 0.18;
-        if (dx < -threshold) goTo(slideStartIndex + 1);
-        else if (dx > threshold) goTo(slideStartIndex - 1);
-        else goTo(slideStartIndex);
-      });
-
-      // Arrow button navigation
-      prevBtn?.addEventListener('click', () => {
-        if (scattered) return;
-        goTo(currentIndex - 1);
-      });
-      nextBtn?.addEventListener('click', () => {
-        if (scattered) return;
-        goTo(currentIndex + 1);
-      });
-
-      // Dot navigation
-      dots.forEach((dot) => {
-        dot.addEventListener('click', () => {
-          if (scattered) return;
-          const idx = parseInt(dot.dataset.index ?? '0', 10);
-          goTo(idx);
-        });
-      });
-
-      // Keyboard
-      document.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 's' || e.key === 'S') {
-          e.preventDefault();
-          scatter();
-          return;
-        }
-        if (scattered) return;
-        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(currentIndex - 1); }
-        if (e.key === 'ArrowRight') { e.preventDefault(); goTo(currentIndex + 1); }
-      });
-
-      // Init — iOS 13+ requires user gesture for DeviceMotion permission
-      const hint = document.querySelector<HTMLElement>('.shake-hint');
-      const originalHint = hint?.textContent ?? 'Shake or press S to scatter';
-
-      if (typeof DeviceMotionEvent !== 'undefined' && typeof (DeviceMotionEvent as any).requestPermission === 'function') {
-        // iOS 13+: show tappable prompt, request permission on tap
-        const requestMotion = () => {
-          (DeviceMotionEvent as any).requestPermission()
-            .then((perm: string) => {
-              if (perm === 'granted') {
-                window.addEventListener('devicemotion', onMotion);
-                if (hint) hint.textContent = 'Shake or press S to scatter';
-              } else {
-                if (hint) hint.textContent = 'Motion denied — press S to scatter';
-              }
-            })
-            .catch(() => {
-              if (hint) hint.textContent = 'Press S to scatter';
+            stage?.addEventListener("touchend", (e: TouchEvent) => {
+                if (!isDragging) return;
+                isDragging = false;
+                const dx = e.changedTouches[0].clientX - startX;
+                const threshold = getCarouselWidth() * 0.18;
+                if (dx < -threshold) goTo(slideStartIndex + 1);
+                else if (dx > threshold) goTo(slideStartIndex - 1);
+                else goTo(slideStartIndex);
             });
-        };
 
-        if (hint) {
-          hint.textContent = 'Tap to enable shake →';
-          hint.style.cursor = 'pointer';
-          const enableOnce = () => { requestMotion(); hint?.removeEventListener('click', enableOnce); hint?.removeEventListener('touchend', enableOnce); };
-          hint.addEventListener('click', enableOnce);
-          hint.addEventListener('touchend', enableOnce);
-        }
-      } else {
-        // Android and older iOS: no permission needed
-        window.addEventListener('devicemotion', onMotion);
-      }
+            // Mouse drag (desktop testing)
+            let mouseDown = false;
+            stage?.addEventListener("mousedown", (e: MouseEvent) => {
+                if (scattered) return;
+                mouseDown = true;
+                startX = e.clientX;
+                slideStartIndex = currentIndex;
+                if (track) track.style.transition = "none";
+            });
+            window.addEventListener("mousemove", (e: MouseEvent) => {
+                if (!mouseDown || scattered) return;
+                const dx = e.clientX - startX;
+                const frameWidth = targets[0]
+                    ? (targets[0] as HTMLElement).offsetWidth
+                    : getCarouselWidth();
+                const base = -slideStartIndex * (frameWidth + 8);
+                setTranslate(base + dx);
+            });
+            window.addEventListener("mouseup", (e: MouseEvent) => {
+                if (!mouseDown) return;
+                mouseDown = false;
+                const dx = e.clientX - startX;
+                const threshold = getCarouselWidth() * 0.18;
+                if (dx < -threshold) goTo(slideStartIndex + 1);
+                else if (dx > threshold) goTo(slideStartIndex - 1);
+                else goTo(slideStartIndex);
+            });
 
-      // Resize handler
-      window.addEventListener('resize', () => {
-        if (!scattered) goTo(currentIndex, false);
-      });
+            // Arrow button navigation
+            prevBtn?.addEventListener("click", () => {
+                if (scattered) return;
+                goTo(currentIndex - 1);
+            });
+            nextBtn?.addEventListener("click", () => {
+                if (scattered) return;
+                goTo(currentIndex + 1);
+            });
 
-      collectTargets();
-      goTo(0, false);
-    })();
-  </script>
+            // Dot navigation
+            dots.forEach((dot) => {
+                dot.addEventListener("click", () => {
+                    if (scattered) return;
+                    const idx = parseInt(dot.dataset.index ?? "0", 10);
+                    goTo(idx);
+                });
+            });
+
+            // Keyboard
+            document.addEventListener("keydown", (e: KeyboardEvent) => {
+                if (e.key === "s" || e.key === "S") {
+                    e.preventDefault();
+                    scatter();
+                    return;
+                }
+                if (scattered) return;
+                if (e.key === "ArrowLeft") {
+                    e.preventDefault();
+                    goTo(currentIndex - 1);
+                }
+                if (e.key === "ArrowRight") {
+                    e.preventDefault();
+                    goTo(currentIndex + 1);
+                }
+            });
+
+            // Init — iOS 13+ requires user gesture for DeviceMotion permission
+            const hint = document.querySelector<HTMLElement>(".shake-hint");
+            const originalHint =
+                hint?.textContent ?? "Shake or press S to scatter";
+
+            if (
+                typeof DeviceMotionEvent !== "undefined" &&
+                typeof (DeviceMotionEvent as any).requestPermission ===
+                    "function"
+            ) {
+                // iOS 13+: show tappable prompt, request permission on tap
+                const requestMotion = () => {
+                    (DeviceMotionEvent as any)
+                        .requestPermission()
+                        .then((perm: string) => {
+                            if (perm === "granted") {
+                                window.addEventListener(
+                                    "devicemotion",
+                                    onMotion,
+                                );
+                                if (hint)
+                                    hint.textContent =
+                                        "Shake or press S to scatter";
+                            } else {
+                                if (hint)
+                                    hint.textContent =
+                                        "Motion denied — press S to scatter";
+                            }
+                        })
+                        .catch(() => {
+                            if (hint) hint.textContent = "Press S to scatter";
+                        });
+                };
+
+                if (hint) {
+                    hint.textContent = "Tap to enable shake →";
+                    hint.style.cursor = "pointer";
+                    const enableOnce = () => {
+                        requestMotion();
+                        hint?.removeEventListener("click", enableOnce);
+                        hint?.removeEventListener("touchend", enableOnce);
+                    };
+                    hint.addEventListener("click", enableOnce);
+                    hint.addEventListener("touchend", enableOnce);
+                }
+            } else {
+                // Android and older iOS: no permission needed
+                window.addEventListener("devicemotion", onMotion);
+            }
+
+            // Resize handler
+            window.addEventListener("resize", () => {
+                if (!scattered) goTo(currentIndex, false);
+            });
+
+            collectTargets();
+            goTo(0, false);
+        })();
+    </script>
 </Base>
 
 <style>
-  .page-project {
-    min-height: calc(100dvh - var(--nav-height));
-    padding: var(--space-2xl) var(--gutter) var(--space-4xl);
-    max-width: 72ch;
-    margin: 0 auto;
-  }
-
-  .project-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--space-3xl);
-  }
-
-  .back-link {
-    font-size: var(--text-label);
-    font-weight: var(--weight-medium);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-neutral-text);
-    text-decoration: none;
-    transition: color var(--duration-base) var(--ease-out-quart);
-  }
-  .back-link:hover { color: var(--color-primary); }
-
-  .project-meta {
-    display: flex;
-    gap: var(--space-md);
-    font-size: var(--text-label);
-    font-weight: var(--weight-medium);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-  }
-  .project-category { color: var(--color-primary); }
-  .project-year { color: var(--color-neutral-muted); }
-
-  /* ── Carousel ──────────────────────────────────────────────── */
-  .project-carousel {
-    position: relative;
-    margin-bottom: var(--space-3xl);
-  }
-
-  .carousel-stage {
-    position: relative;
-    overflow: visible;
-    background: #f2f0ec;
-    cursor: grab;
-    aspect-ratio: 16 / 9;
-  }
-
-  .carousel-stage.is-scattered {
-    overflow: visible;
-  }
-
-  .carousel-stage:active { cursor: grabbing; }
-
-  .carousel-track {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    gap: 8px;
-    /* Initial position set by JS */
-    transform: translateX(0);
-    will-change: transform;
-  }
-
-  .carousel-frame {
-    flex: 0 0 auto;
-    height: 100%;
-    aspect-ratio: 4 / 5;
-    display: flex;
-    align-items: stretch;
-    justify-content: stretch;
-    background: #fff;
-    box-shadow: 0 4px 14px oklch(0% 0 0 / 0.14);
-    box-sizing: border-box;
-    padding: 7px 7px 7px;
-    /* No transform here — only .is-scattered applies the scatter transform.
-       This avoids double-application when both rules stack. */
-    z-index: 1;
-  }
-
-  .carousel-frame,
-  .carousel-frame:not(.is-scattered) {
-    transition:
-      transform 0.7s cubic-bezier(0.25, 1, 0.5, 1),
-      box-shadow 0.5s var(--ease-out-quart);
-  }
-
-  .carousel-frame.is-scattered {
-    position: absolute;
-    left: 0;
-    top: 0;
-    /* When scattered: center-anchor so tx/ty positions from element midpoint, plus random scale */
-    transform:
-      translate3d(-50%, -50%, 0)
-      translate3d(var(--scatter-tx, 0px), var(--scatter-ty, 0px), 0)
-      rotate(var(--scatter-rot, 0deg))
-      scale(var(--scatter-scale, 1));
-    will-change: transform;
-    box-shadow:
-      0 16px 48px oklch(0% 0 0 / 0.38),
-      0 6px 18px oklch(0% 0 0 / 0.22);
-    z-index: 10;
-  }
-
-  .carousel-frame:not(.is-scattered) {
-    position: relative;
-  }
-
-  .polaroid {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-  }
-
-  :global(.carousel-image) {
-    display: block;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    object-fit: cover;
-  }
-
-  .polaroid-caption {
-    font-family: var(--font-marker);
-    font-size: 0.8rem;
-    color: oklch(30% 0.01 50);
-    padding: 10px 12px 14px;
-    line-height: 1.35;
-    flex-shrink: 0;
-    min-height: 3.5rem;
-    box-sizing: border-box;
-    text-wrap: balance;
-  }
-
-  /* ── Nav ──────────────────────────────────────────────────── */
-  .carousel-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-md);
-    margin-top: var(--space-md);
-  }
-
-  .carousel-arrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--color-neutral-border);
-    border-radius: 50%;
-    background: none;
-    color: var(--color-neutral-text);
-    cursor: pointer;
-    transition:
-      background var(--duration-base) var(--ease-out-quart),
-      border-color var(--duration-base) var(--ease-out-quart),
-      color var(--duration-base) var(--ease-out-quart);
-  }
-  .carousel-arrow:hover {
-    background: var(--color-neutral-surface);
-    border-color: var(--color-neutral-muted);
-    color: var(--color-primary);
-  }
-
-  .carousel-dots {
-    display: flex;
-    gap: var(--space-xs);
-    align-items: center;
-  }
-
-  .carousel-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    border: none;
-    background: var(--color-neutral-border);
-    cursor: pointer;
-    padding: 0;
-    transition:
-      background var(--duration-base) var(--ease-out-quart),
-      transform var(--duration-base) var(--ease-out-quart);
-  }
-  .carousel-dot.is-active {
-    background: var(--color-primary);
-    transform: scale(1.4);
-  }
-
-  /* ── Hint ─────────────────────────────────────────────────── */
-  .shake-hint {
-    text-align: center;
-    font-size: var(--text-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-neutral-muted);
-    margin-top: var(--space-sm);
-    opacity: 0.6;
-  }
-
-  /* ── Project body ─────────────────────────────────────────── */
-  .project-body {
-    opacity: 0;
-    transform: translateY(12px);
-    animation: fadeUp var(--duration-slow) var(--ease-out-quart) forwards;
-    animation-delay: 100ms;
-  }
-
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .project-body { opacity: 1; transform: none; animation: none; }
-    .carousel-track { transition: none !important; }
-    .carousel-frame { transition: none !important; }
-  }
-
-  .project-title {
-    font-size: var(--text-display);
-    font-weight: var(--weight-light);
-    letter-spacing: var(--tracking-display);
-    line-height: var(--leading-display);
-    color: var(--color-neutral-text);
-    margin-bottom: var(--space-xl);
-  }
-
-  .project-description { margin-bottom: var(--space-2xl); }
-
-  .project-description p {
-    font-size: var(--text-body);
-    color: var(--color-neutral-muted);
-    line-height: var(--leading-body);
-  }
-
-  .project-content {
-    font-size: var(--text-body);
-    color: var(--color-neutral-text);
-    line-height: var(--leading-body);
-  }
-
-  .project-content p { margin-bottom: var(--space-lg); }
-  .project-content p:last-child { margin-bottom: 0; }
-
-  @media (max-width: 640px) {
-    .project-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-sm);
+    .page-project {
+        min-height: calc(100dvh - var(--nav-height));
+        padding: var(--space-2xl) var(--gutter) var(--space-4xl);
+        max-width: 72ch;
+        margin: 0 auto;
     }
-    .carousel-frame { padding: 7px 7px 7px; }
-    .polaroid-caption { padding: 8px 0 6px; min-height: 0; }
-    .shake-hint { font-size: 10px; }
-  }
+
+    .project-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-3xl);
+    }
+
+    .back-link {
+        font-size: var(--text-label);
+        font-weight: var(--weight-medium);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+        color: var(--color-neutral-text);
+        text-decoration: none;
+        transition: color var(--duration-base) var(--ease-out-quart);
+    }
+    .back-link:hover {
+        color: var(--color-primary);
+    }
+
+    .project-meta {
+        display: flex;
+        gap: var(--space-md);
+        font-size: var(--text-label);
+        font-weight: var(--weight-medium);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+    }
+    .project-category {
+        color: var(--color-primary);
+    }
+    .project-year {
+        color: var(--color-neutral-muted);
+    }
+
+    /* ── Carousel ──────────────────────────────────────────────── */
+    .project-carousel {
+        position: relative;
+        margin-bottom: var(--space-3xl);
+    }
+
+    .carousel-stage {
+        position: relative;
+        overflow: hidden;
+        background: #f2f0ec;
+        cursor: grab;
+        aspect-ratio: 16 / 9;
+    }
+
+    .carousel-stage.is-scattered {
+        overflow: visible;
+    }
+
+    .carousel-stage:active {
+        cursor: grabbing;
+    }
+
+    .carousel-track {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        gap: 8px;
+        /* Initial position set by JS */
+        transform: translateX(0);
+        will-change: transform;
+    }
+
+    .carousel-frame {
+        flex: 0 0 auto;
+        height: 100%;
+        aspect-ratio: 4 / 5;
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+        background: #fff;
+        box-shadow: 0 4px 14px oklch(0% 0 0 / 0.14);
+        box-sizing: border-box;
+        padding: 7px 7px 7px;
+        /* No transform here — only .is-scattered applies the scatter transform.
+       This avoids double-application when both rules stack. */
+        z-index: 1;
+    }
+
+    .carousel-frame,
+    .carousel-frame:not(.is-scattered) {
+        transition:
+            transform 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+            box-shadow 0.5s var(--ease-out-quart);
+    }
+
+    .carousel-frame.is-scattered {
+        position: absolute;
+        left: 0;
+        top: 0;
+        /* When scattered: center-anchor so tx/ty positions from element midpoint, plus random scale */
+        transform: translate3d(-50%, -50%, 0)
+            translate3d(var(--scatter-tx, 0px), var(--scatter-ty, 0px), 0)
+            rotate(var(--scatter-rot, 0deg)) scale(var(--scatter-scale, 1));
+        will-change: transform;
+        box-shadow:
+            0 16px 48px oklch(0% 0 0 / 0.38),
+            0 6px 18px oklch(0% 0 0 / 0.22);
+        z-index: 10;
+    }
+
+    .carousel-frame:not(.is-scattered) {
+        position: relative;
+    }
+
+    .polaroid {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+    }
+
+    :global(.carousel-image) {
+        display: block;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        object-fit: cover;
+    }
+
+    .polaroid-caption {
+        font-family: var(--font-marker);
+        font-size: 0.8rem;
+        color: oklch(30% 0.01 50);
+        padding: 10px 12px 14px;
+        line-height: 1.35;
+        flex-shrink: 0;
+        min-height: 3.5rem;
+        box-sizing: border-box;
+        text-wrap: balance;
+    }
+
+    /* ── Nav ──────────────────────────────────────────────────── */
+    .carousel-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-md);
+        margin-top: var(--space-md);
+    }
+
+    .carousel-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--color-neutral-border);
+        border-radius: 50%;
+        background: none;
+        color: var(--color-neutral-text);
+        cursor: pointer;
+        transition:
+            background var(--duration-base) var(--ease-out-quart),
+            border-color var(--duration-base) var(--ease-out-quart),
+            color var(--duration-base) var(--ease-out-quart);
+    }
+    .carousel-arrow:hover {
+        background: var(--color-neutral-surface);
+        border-color: var(--color-neutral-muted);
+        color: var(--color-primary);
+    }
+
+    .carousel-dots {
+        display: flex;
+        gap: var(--space-xs);
+        align-items: center;
+    }
+
+    .carousel-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        border: none;
+        background: var(--color-neutral-border);
+        cursor: pointer;
+        padding: 0;
+        transition:
+            background var(--duration-base) var(--ease-out-quart),
+            transform var(--duration-base) var(--ease-out-quart);
+    }
+    .carousel-dot.is-active {
+        background: var(--color-primary);
+        transform: scale(1.4);
+    }
+
+    /* ── Hint ─────────────────────────────────────────────────── */
+    .shake-hint {
+        text-align: center;
+        font-size: var(--text-label);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+        color: var(--color-neutral-muted);
+        margin-top: var(--space-sm);
+        opacity: 0.6;
+    }
+
+    /* ── Project body ─────────────────────────────────────────── */
+    .project-body {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: fadeUp var(--duration-slow) var(--ease-out-quart) forwards;
+        animation-delay: 100ms;
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .project-body {
+            opacity: 1;
+            transform: none;
+            animation: none;
+        }
+        .carousel-track {
+            transition: none !important;
+        }
+        .carousel-frame {
+            transition: none !important;
+        }
+    }
+
+    .project-title {
+        font-size: var(--text-display);
+        font-weight: var(--weight-light);
+        letter-spacing: var(--tracking-display);
+        line-height: var(--leading-display);
+        color: var(--color-neutral-text);
+        margin-bottom: var(--space-xl);
+    }
+
+    .project-description {
+        margin-bottom: var(--space-2xl);
+    }
+
+    .project-description p {
+        font-size: var(--text-body);
+        color: var(--color-neutral-muted);
+        line-height: var(--leading-body);
+    }
+
+    .project-content {
+        font-size: var(--text-body);
+        color: var(--color-neutral-text);
+        line-height: var(--leading-body);
+    }
+
+    .project-content p {
+        margin-bottom: var(--space-lg);
+    }
+    .project-content p:last-child {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+        .project-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--space-sm);
+        }
+        .carousel-frame {
+            padding: 7px 7px 7px;
+        }
+        .polaroid-caption {
+            padding: 8px 0 6px;
+            min-height: 0;
+        }
+        .shake-hint {
+            font-size: 10px;
+        }
+    }
 </style>
