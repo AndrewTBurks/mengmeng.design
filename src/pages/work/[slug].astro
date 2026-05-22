@@ -156,12 +156,16 @@ const allImages = [...(project.data.images ?? [])];
         const frameWidth = frameEl ? frameEl.offsetWidth : stageWidth;
         const frameHeight = frameEl ? frameEl.offsetHeight : stageHeight;
 
-        // Snapshot each frame's visual position relative to the stage using getBoundingClientRect
-        // (accounts for any track translate already applied via flex layout)
+        // Snapshot each frame's visual position relative to the stage.
+        // getBoundingClientRect gives positions ignoring CSS transforms on ancestors,
+        // so we compensate: subtract currentTranslate to get the frame's true offset
+        // within the track's *visual* coordinate space.
         const stageRect = stage.getBoundingClientRect();
         const frameRects = targets.map((el) => {
           const r = el.getBoundingClientRect();
-          return { left: r.left - stageRect.left, top: r.top - stageRect.top };
+          const left = r.left - stageRect.left - currentTranslate;
+          const top = r.top - stageRect.top;
+          return { left, top };
         });
 
         const n = targets.length;
@@ -172,12 +176,14 @@ const allImages = [...(project.data.images ?? [])];
         const availableW = stageWidth - padding * 2;
         const availableH = stageHeight - padding * 2;
 
-        const frameData = targets.map(() => {
+        const frameData = targets.map((_, i) => {
           const rot = (Math.random() - 0.5) * 36;
-          // tx/ty are absolute positions within the padded stage area
-          // (CSS translate3d moves from left:0, top:0, so these are true coordinates not offsets)
-          const tx = padding + Math.random() * availableW;
-          const ty = padding + Math.random() * availableH;
+          // Each frame's true visual left within the stage (compensated for track translateX).
+          // Scatter adds a positive offset so frames always drift in the direction of travel.
+          const baseX = frameRects[i].left + currentTranslate;
+          const baseY = frameRects[i].top;
+          const tx = baseX + 20 + Math.random() * availableW * 0.3;
+          const ty = baseY + 20 + Math.random() * availableH * 0.3;
           // Add slight individual variation on top of the uniform scale
           const scale = baseScale * (0.85 + Math.random() * 0.3);
           return { rot, tx, ty, scale };
