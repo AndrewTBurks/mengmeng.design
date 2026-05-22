@@ -646,13 +646,17 @@ const allImages = [...(project.data.images ?? [])];
         object-fit: cover;
     }
 
-    .polaroid-caption {
+.polaroid-caption {
         font-family: var(--font-marker);
         font-size: 0.8rem;
         color: oklch(30% 0.01 50);
         padding: 10px 12px 14px;
         line-height: 1.35;
-        flex-shrink: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
         min-height: 3.5rem;
         box-sizing: border-box;
         text-wrap: balance;
