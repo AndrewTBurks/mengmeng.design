@@ -167,8 +167,10 @@ const allImages = [...(project.data.images ?? [])];
         const padding = 12;
         const availableW = stageWidth - padding * 2;
         const availableH = stageHeight - padding * 2;
-        // Scatter center: account for track translate so it's relative to the visible carousel position
-        const scatterCenterX = stageWidth / 2 + currentTranslate / 2;
+        // Scatter center: the current slide frame is always flush-left in the stage
+        // (track is shifted to position the active frame at stage-x=0), so its
+        // midpoint in stage coords is always frameWidth/2 — no currentTranslate needed.
+        const scatterCenterX = (frameEl ? frameEl.offsetWidth : stageWidth) / 2;
         const scatterCenterY = stageHeight / 2;
 
         const frameData = targets.map(() => {
