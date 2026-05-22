@@ -190,9 +190,12 @@ const allImages = [...(project.data.images ?? [])];
           el.style.setProperty('--scatter-tx', `${tx}px`);
           el.style.setProperty('--scatter-ty', `${ty}px`);
           el.style.setProperty('--scatter-scale', `${scale}`);
+          console.log(`[scatter] frame${i} CSS variables: --scatter-tx=${tx}px --scatter-ty=${ty}px --scatter-rot=${rot}deg --scatter-scale=${scale} | computed tx=${tx.toFixed(1)} ty=${ty.toFixed(1)}`);
+          console.log(`[scatter] frame${i} before classList.add: position=${getComputedStyle(el).position} left=${getComputedStyle(el).left} top=${getComputedStyle(el).top}`);
           (el as HTMLElement).style.transitionDelay = `${i * 40}ms`;
           (el as HTMLElement).style.zIndex = `${z}`;
           el.classList.add('is-scattered');
+          console.log(`[scatter] frame${i} after classList.add: position=${getComputedStyle(el).position} left=${getComputedStyle(el).left} top=${getComputedStyle(el).top} transform=${getComputedStyle(el).transform}`);
         });
 
         // Show overflow when scattered so scaled frames can spread beyond stage bounds
@@ -460,13 +463,16 @@ const allImages = [...(project.data.images ?? [])];
     box-shadow: 0 4px 14px oklch(0% 0 0 / 0.14);
     box-sizing: border-box;
     padding: 7px 7px 7px;
-    transform:
-      translate3d(var(--scatter-tx, 0px), var(--scatter-ty, 0px), 0)
-      rotate(var(--scatter-rot, 0deg));
+    /* No transform here — only .is-scattered applies the scatter transform.
+       This avoids double-application when both rules stack. */
+    z-index: 1;
+  }
+
+  .carousel-frame,
+  .carousel-frame:not(.is-scattered) {
     transition:
       transform 0.7s cubic-bezier(0.25, 1, 0.5, 1),
       box-shadow 0.5s var(--ease-out-quart);
-    z-index: 1;
   }
 
   .carousel-frame.is-scattered {
