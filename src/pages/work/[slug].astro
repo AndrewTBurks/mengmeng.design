@@ -21,8 +21,7 @@ const allImages = [...(project.data.images ?? [])];
     title={`${project.data.title} — Mengmeng`}
     description={project.data.description}
 >
-    <div class="page-project">
-        <div class="project-header">
+<div class="project-header">
             <a href="/work" class="back-link">← Back to work</a>
             <div class="project-meta">
                 <span class="project-category">{project.data.category}</span>
@@ -131,10 +130,6 @@ const allImages = [...(project.data.images ?? [])];
                     </svg>
                 </button>
             </div>
-
-            <p class="shake-hint" aria-hidden="true">
-                Shake or press S to scatter
-            </p>
         </div>
 
         <div class="project-body">
@@ -515,25 +510,12 @@ const allImages = [...(project.data.images ?? [])];
 <style>
     .page-project {
         min-height: calc(100dvh - var(--nav-height));
-        padding: var(--space-2xl) var(--gutter) var(--space-4xl);
-        max-width: 72ch;
-        margin: 0 auto;
     }
 
     .project-header {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-md);
-        margin-bottom: var(--space-3xl);
-    }
-
-    .project-header .project-title {
-        margin-bottom: 0;
-    }
-
-    .project-header .project-description {
-        margin-bottom: 0;
+        padding: var(--space-2xl) var(--gutter) 0;
+        max-width: calc(var(--max-width) + 2 * var(--gutter));
+        margin: 0 auto;
     }
 
     .back-link {
@@ -573,9 +555,9 @@ const allImages = [...(project.data.images ?? [])];
     .carousel-stage {
         position: relative;
         overflow: hidden;
-        background: #f2f0ec;
+        background: var(--color-neutral-surface);
         cursor: grab;
-        aspect-ratio: 16 / 9;
+        height: clamp(280px, 40vw, 480px);
     }
 
     .carousel-stage.is-scattered {
