@@ -8,9 +8,9 @@ images:
     caption: Study in glass and ceramic — morning north light
   - src: https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=800&q=80
     caption: Cloth and porcelain — the weight of linen
-  - src: https://images.unsplash.com/photo-1460661419201-fd4cecdf7a8b?w=800&q=80
+  - src: https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80
     caption: Final composition — vessels in afternoon window
-  - src: https://images.unsplash.com/photo-1548024674-f8c48771001a?w=800&q=80
+  - src: https://images.unsplash.com/photo-1493106819501-66d381c466f1?w=800&q=80
     caption: Study in glass and ceramic — morning north light
 order: 0
 ---

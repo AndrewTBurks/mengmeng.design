@@ -10,7 +10,7 @@ images:
     caption: Pigeon anatomy — detail from illustration #7
   - src: https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&q=80
     caption: Final spread — park as infrastructure
-  - src: https://images.unsplash.com/photo-1554941820-202a5a88e8d9?w=800&q=80
+  - src: https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80
     caption: Process spread — thumbnailing and compositional studies
 order: 5
 ---

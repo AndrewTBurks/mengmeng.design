@@ -6,7 +6,7 @@ description: A typographic poster series exploring the relationship between lett
 images:
   - src: https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80
     caption: Poster one — heavy ink on uncoated stock, overprinted twice
-  - src: https://images.unsplash.com/photo-1609899464726-209befac3f45?w=800&q=80
+  - src: https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80
     caption: Poster two — letterform dissection, halftone separation
   - src: https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80
     caption: Poster three — ink wash and pressure variation on cotton rag
