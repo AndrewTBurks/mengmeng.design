@@ -28,6 +28,10 @@ const allImages = [...(project.data.images ?? [])];
                 <span class="project-category">{project.data.category}</span>
                 <span class="project-year">{project.data.year}</span>
             </div>
+            <h1 class="project-title">{project.data.title}</h1>
+            <div class="project-description">
+                <p>{project.data.description}</p>
+            </div>
         </div>
 
         <div
@@ -134,10 +138,6 @@ const allImages = [...(project.data.images ?? [])];
         </div>
 
         <div class="project-body">
-            <h1 class="project-title">{project.data.title}</h1>
-            <div class="project-description">
-                <p>{project.data.description}</p>
-            </div>
             <div class="project-content">
                 <Content />
             </div>
@@ -522,9 +522,18 @@ const allImages = [...(project.data.images ?? [])];
 
     .project-header {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
         margin-bottom: var(--space-3xl);
+    }
+
+    .project-header .project-title {
+        margin-bottom: 0;
+    }
+
+    .project-header .project-description {
+        margin-bottom: 0;
     }
 
     .back-link {
