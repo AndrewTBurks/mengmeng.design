@@ -720,6 +720,9 @@ const allImages = [...(project.data.images ?? [])];
 
     /* ── Project body ─────────────────────────────────────────── */
     .project-body {
+        padding: var(--space-3xl) var(--gutter);
+        max-width: 72ch;
+        margin: 0 auto;
         opacity: 0;
         transform: translateY(12px);
         animation: fadeUp var(--duration-slow) var(--ease-out-quart) forwards;
