@@ -54,7 +54,12 @@
   --tracking-label: 0.15em;
 }
 
-/* ── Spacing ───────────────────────────────────────────────── */
+/* ── Layout ───────────────────────────────────────────────── */
+:root {
+  --nav-height: 4rem;
+  --max-width: 1200px;
+  --gutter: clamp(1rem, 4vw, 2rem);
+}
 :root {
   --space-2xs: 0.25rem;  /* 4px */
   --space-xs: 0.5rem;    /* 8px */
